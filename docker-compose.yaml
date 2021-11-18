@@ -1,0 +1,38 @@
+version: "3.6"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=0r9an1zz3r_db
+    expose:
+    - "6969"
+    ports:
+    - "6969:5432"
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    networks:
+      - 0r9an1zz3r
+
+  api:
+    build: ./api
+    environment:
+      - PORT=80
+      - FLASK_DEBUG=1
+    env_file:
+      - api/.env
+    command: flask run --host=0.0.0.0 --port=80
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    networks:
+      - 0r9an1zz3r
+
+volumes:
+    db_volume:
+
+networks:
+    0r9an1zz3r:
+        driver: bridge
