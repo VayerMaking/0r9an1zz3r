@@ -78,7 +78,7 @@ def classify():
     new_filename = random_string(64)  # + file_extension
     imagefile.save(os.path.join("uploads", new_filename))
     predictions, probabilities = prediction.classifyImage(
-        os.path.join(execution_path, "uploads" + filename), result_count=1)
+        os.path.join(execution_path, "uploads/" + filename), result_count=1)
 
     image = Image(filename=new_filename, tag=predictions[0])
 
