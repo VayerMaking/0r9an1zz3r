@@ -91,7 +91,12 @@ def classify():
 @app.route('/getImages', methods=['GET'])
 def getImages():
     images = Image.query.all().limit(15)
-    return images
+    return jsonify(images)
+
+
+@app.route('/image/<path:filename>')
+def send_app_image(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 def random_string(length):
