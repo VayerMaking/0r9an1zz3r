@@ -22,7 +22,8 @@ services:
       - FLASK_DEBUG=1
     env_file:
       - api/.env
-    command: flask run --host=0.0.0.0 --port=80
+    # command: flask run --host=0.0.0.0 --port=80
+    command: python main.py
     ports:
       - "80:80"
     depends_on:
