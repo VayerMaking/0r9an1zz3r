@@ -85,7 +85,13 @@ def classify():
     db.session.add(image)
     db.session.commit()
 
-    return new_filename + " -> "  + predictions[0]
+    return new_filename + " -> " + predictions[0]
+
+
+@app.route('/getImages', methods=['GET'])
+def getImages():
+    images = Image.query.all().limit(15)
+    return images
 
 
 def random_string(length):
