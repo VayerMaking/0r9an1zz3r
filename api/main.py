@@ -59,7 +59,7 @@ class Image(db.Model):
     tag: str
 
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(50))
+    filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
 
 
@@ -78,14 +78,14 @@ def classify():
     new_filename = random_string(64)  # + file_extension
     imagefile.save(os.path.join("uploads", new_filename))
     predictions, probabilities = prediction.classifyImage(
-        os.path.join(execution_path, "uploads/" + filename), result_count=1)
+        os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
     image = Image(filename=new_filename, tag=predictions[0])
 
     db.session.add(image)
     db.session.commit()
 
-    return str(new_filename, predictions[0])
+    return new_filename + " -> "  + predictions[0]
 
 
 def random_string(length):
@@ -96,5 +96,6 @@ if __name__ == "__main__":
     """
     This is the main entry point for the program
     """
+    print("we are here")
     db.create_all()
     app.run(host="0.0.0.0", port=80)
