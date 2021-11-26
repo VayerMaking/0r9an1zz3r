@@ -6,7 +6,6 @@
  * @flow strict-local
  */
 
-import React from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -16,7 +15,10 @@ import {
   Text,
   useColorScheme,
   View,
+  Image,
 } from 'react-native';
+
+import React, {useState, useEffect} from 'react';
 
 import {
   Colors,
@@ -25,6 +27,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+const baseURI = 'http://192.168.88.244:80';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -59,6 +63,32 @@ const App: () => Node = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    async function fetchImages() {
+      const url = baseURI + '/getImages';
+      const response = await fetch(url);
+      const json = await response.json();
+      setImages(json);
+    }
+    fetchImages();
+  }, []);
+
+  const ImageComponent = images ? (
+    images.map(i => {
+      const URL = baseURI + '/image/' + i.filename;
+      const keyId = images.indexOf(i);
+      return (
+        <View key={keyId}>
+          <Image source={{uri: URL}} style={styles.imageStyles} />
+        </View>
+      );
+    })
+  ) : (
+    <Text style={styles.highlight}>No images found</Text>
+  );
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -70,6 +100,7 @@ const App: () => Node = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          {ImageComponent}
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
@@ -106,6 +137,10 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  imageStyles: {
+    width: 200,
+    height: 200,
   },
 });
 
