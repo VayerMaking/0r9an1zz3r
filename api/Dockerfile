@@ -7,7 +7,7 @@ ADD . /api
 # COPY .env .env
 
 RUN pip install -r requirements.txt
-RUN pip install tensorflow
+RUN pip install tensorflow --no-cache-dir
 RUN pip install imageai
 RUN mkdir uploads
 
