@@ -1,5 +1,5 @@
 from scipy.spatial import KDTree
-from webcolors import css3_hex_to_names, hex_to_rgb
+import webcolors
 
 
 def convert_rgb_to_names(rgb_tuple):
