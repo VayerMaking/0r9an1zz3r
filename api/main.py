@@ -8,6 +8,7 @@ from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects import postgresql
 from dataclasses import dataclass
 from typing import List
 import werkzeug
@@ -63,13 +64,13 @@ class Image(db.Model):
     filename: str
     tag: str
     is_classified: bool
-    colors: List[ChildType]
+    #colors: List[ChildType]
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
-    colors = db.Column(db.Array(String))
+    colors = db.Column(postgresql.ARRAY(String, dimensions=1))
 
 
 @app.route('/', methods=['GET'])
