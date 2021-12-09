@@ -9,9 +9,14 @@ from flask import render_template, request, flash, redirect, url_for, session, j
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from dataclasses import dataclass
+from typing import List
 import werkzeug
 # image classification
 from imageai.Classification import ImageClassification
+# color detection
+import color_detection as cd
+# color names
+import color_name
 
 # load env variables
 load_dotenv()
@@ -57,10 +62,14 @@ class Image(db.Model):
     id: int
     filename: str
     tag: str
+    is_classified: bool
+    colors: List[ChildType]
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
+    is_classified = db.Column(db.Boolean, default=False)
+    colors = db.Column(db.Array(String))
 
 
 @app.route('/', methods=['GET'])
@@ -85,7 +94,7 @@ def classify():
     db.session.add(image)
     db.session.commit()
 
-    return new_filename + " -> " + predictions[0]
+    return "ok"
 
 
 @app.route('/getImages', methods=['GET'])
@@ -97,6 +106,28 @@ def getImages():
 @app.route('/image/<path:filename>')
 def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@app.route('/classify_color', methods=['POST'])
+def classify_color():
+    imagefile = request.files['image']
+    filename = werkzeug.utils.secure_filename(imagefile.filename)
+    print("\nReceived image File name : " + imagefile.filename)
+    file_extension = os.path.splitext(filename)[1]
+    new_filename = random_string(64)  # + file_extension
+    imagefile.save(os.path.join("uploads", new_filename))
+    # color recognition logic
+
+    colors = cd.get_colors(cd.get_image(
+        'uploads/Panda_BradJosephs-4CROP_Web.jpg'), 8, True)
+    for i in colors:
+        print(color_name.convert_rgb_to_names(i))
+    # image = Image(filename=new_filename, colors=colors)
+
+    # db.session.add(image)
+    # db.session.commit()
+
+    return "ok"
 
 
 def random_string(length):
