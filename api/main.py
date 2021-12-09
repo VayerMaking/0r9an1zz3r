@@ -99,7 +99,7 @@ def classify():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.all().limit(15)
+    images = Image.query.limit(15).all()
     return jsonify(images)
 
 
