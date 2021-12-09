@@ -70,7 +70,7 @@ class Image(db.Model):
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
-    colors = db.Column(postgresql.ARRAY(String, dimensions=1))
+    colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
 
 
 @app.route('/', methods=['GET'])

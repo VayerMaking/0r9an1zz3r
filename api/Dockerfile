@@ -9,6 +9,8 @@ ADD . /api
 RUN pip install -r requirements.txt
 RUN pip install tensorflow --no-cache-dir
 RUN pip install imageai
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6  -y
 RUN mkdir uploads
 
 EXPOSE 80
