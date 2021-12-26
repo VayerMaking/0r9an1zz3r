@@ -1,8 +1,10 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import React, { useState, useEffect } from 'react';
 
 
-
+const wait = (timeout: number | undefined) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 const styles = StyleSheet.create({
     imageStyles: {
@@ -27,7 +29,8 @@ const styles = StyleSheet.create({
 
 export default function ImageComponent() {
     const [images, setImages] = useState([]);
-    const baseURL = 'http://18.117.121.53:80';
+    const baseURL = 'http://192.168.88.244:80';
+    const [refreshing, setRefreshing] = React.useState(false);
 
     interface IImage {
         id: string,
@@ -36,33 +39,46 @@ export default function ImageComponent() {
         is_classified: boolean,
         colors: Array<string>
     }
+    async function fetchImages() {
+        const url = baseURL + '/getImages';
+        const response = await fetch(url);
+        const json = await response.json();
+        setImages(json);
+    }
     useEffect(() => {
-        async function fetchImages() {
-            const url = baseURL + '/getImages';
-            const response = await fetch(url);
-            const json = await response.json();
-            setImages(json);
-        }
         fetchImages();
     }, []);
 
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchImages();
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
     return <>
-        <View style={styles.container}>
-            {images ? (
-                images.map(i => {
-                    //@ts-ignore
-                    const URL = baseURL + '/image/' + i.filename;
-                    const keyId = images.indexOf(i);
-                    return (
-                        <View style={styles.item} key={keyId}>
-                            <Image source={{ uri: URL }} style={styles.imageStyles} />
-                        </View>
-                    );
-                })
-            ) : (
-                <Text style={styles.highlight}>No images found</Text>
-            )}
-        </View>
+        <ScrollView refreshControl={
+            <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+            />
+        }>
+            <View style={styles.container}>
+                {images ? (
+                    images.map(i => {
+                        //@ts-ignore
+                        const URL = baseURL + '/image/' + i.filename;
+                        const keyId = images.indexOf(i);
+                        return (
+                            <View style={styles.item} key={keyId}>
+                                <Image source={{ uri: URL }} style={styles.imageStyles} />
+                            </View>
+                        );
+                    })
+                ) : (
+                    <Text style={styles.highlight}>No images found</Text>
+                )}
+            </View>
+        </ScrollView>
     </>
 
 }
