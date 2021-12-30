@@ -121,13 +121,13 @@ def classify_color(filename):
     image = Image.query.filter_by(filename=filename).first()
     # color recognition logic
     file_path = 'uploads/' + filename
-    colors = cd.get_colors(cd.get_image(file_path), 8, True)
-    for i in colors:
-        print(color_name.convert_rgb_to_names(i))
+    # colors = cd.get_colors(cd.get_image(file_path), 8, True)
+    # for i in colors:
+    #     print(color_name.convert_rgb_to_names(i))
 
-    image.colors = colors
-    db.session.add(image)
-    db.session.commit()
+    # image.colors = colors
+    # db.session.add(image)
+    # db.session.commit()
     # image = Image(filename=new_filename, colors=colors)
 
     # db.session.add(image)
