@@ -79,8 +79,8 @@ def index():
     return str(map)
 
 
-@app.route('/classify', methods=['POST'])
-def classify():
+@app.route('/upload', methods=['POST'])
+def upload():
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
     print("\nReceived image File name : " + imagefile.filename)
