@@ -104,6 +104,13 @@ def getImages():
     return jsonify(images)
 
 
+@app.route('/getCategories', methods=['GET'])
+def getCategories():
+    # categories = Image.query.limit(15).all()
+    categories = Image.select(Image.tag).all()
+    return jsonify(categories)
+
+
 @app.route('/image/<path:filename>')
 def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
