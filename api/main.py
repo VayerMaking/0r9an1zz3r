@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import random
 import hashlib
 import string
+import sys
 # flask
 from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
@@ -120,7 +121,7 @@ def send_app_image(filename):
 def classify_color(filename):
     image = Image.query.filter_by(filename=filename).first()
     # color recognition logic
-    file_path = 'uploads/' + image.filename
+    file_path = sys.path[0] + 'uploads/' + image.filename
     colors = cd.get_colors(cd.get_image(file_path), 8, True)
     for i in colors:
         print(color_name.convert_rgb_to_names(i))
