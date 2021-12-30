@@ -109,26 +109,24 @@ def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@app.route('/classify_color', methods=['POST'])
-def classify_color():
-    imagefile = request.files['image']
-    filename = werkzeug.utils.secure_filename(imagefile.filename)
-    print("\nReceived image File name : " + imagefile.filename)
-    file_extension = os.path.splitext(filename)[1]
-    new_filename = random_string(64)  # + file_extension
-    imagefile.save(os.path.join("uploads", new_filename))
+@app.route('/classify_color/<path:filename>', methods=['POST'])
+def classify_color(filename):
+    image = Image.query.filter_by(filename=filename).first()
     # color recognition logic
-
-    colors = cd.get_colors(cd.get_image(
-        'uploads/Panda_BradJosephs-4CROP_Web.jpg'), 8, True)
+    file_path = 'uploads/' + filename
+    colors = cd.get_colors(cd.get_image(file_path), 8, True)
     for i in colors:
         print(color_name.convert_rgb_to_names(i))
+
+    image.colors = colors
+    db.session.add(image)
+    db.session.commit()
     # image = Image(filename=new_filename, colors=colors)
 
     # db.session.add(image)
     # db.session.commit()
 
-    return "ok"
+    return jsonify(image)
 
 
 def random_string(length):
