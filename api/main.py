@@ -108,8 +108,11 @@ def getImages():
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    categories = Image.select(Image.tag).all()
-    return jsonify(categories)
+    images = Image.query.limit(15).all()
+    tags = []
+    for image in images:
+        tags.append(image.tag)
+    return jsonify(tags)
 
 
 @app.route('/image/<path:filename>')
