@@ -1,6 +1,8 @@
-import { View, Text, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import React, { useState, useEffect } from 'react';
-
+import { View, Text, Image, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useMemo } from 'react';
+import { withSafeAreaInsets } from "react-native-safe-area-context";
+import { Props } from "../types";
+import { useNavigation } from '@react-navigation/native';
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -25,12 +27,16 @@ const styles = StyleSheet.create({
     item: {
         width: '50%' // is 50% of container width
     },
+    imageText: {
+        color: "white",
+    },
 });
 
 export default function ImageComponent() {
     const [images, setImages] = useState([]);
     const baseURL = 'http://192.168.88.244:80';
     const [refreshing, setRefreshing] = React.useState(false);
+    const navigation = useNavigation();
 
     interface IImage {
         id: string,
@@ -45,8 +51,13 @@ export default function ImageComponent() {
         const json = await response.json();
         setImages(json);
     }
+    //const newImages = useMemo(() => fetchImages(), []);
+    // kolcho --> useMemo or useCalback
+
+
     useEffect(() => {
         fetchImages();
+        // console.log(images.length);
     }, []);
 
     const onRefresh = React.useCallback(() => {
@@ -69,9 +80,10 @@ export default function ImageComponent() {
                         const URL = baseURL + '/image/' + i.filename;
                         const keyId = images.indexOf(i);
                         return (
-                            <View style={styles.item} key={keyId}>
+                            <TouchableOpacity style={styles.item} key={keyId} onPress={() => navigation.navigate('Image')}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
-                            </View>
+                                <Text>{i.tag}</Text>
+                            </TouchableOpacity>
                         );
                     })
                 ) : (
@@ -82,14 +94,4 @@ export default function ImageComponent() {
     </>
 
 }
-
-
-
-// export default class ImageComponent extends React.Component { 
-//     render() { 
-//       return (
-//         <ImageComponent/>
-//       );
-//     }
-//   }
 
