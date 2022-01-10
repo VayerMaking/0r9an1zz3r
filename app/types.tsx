@@ -17,7 +17,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
-  Image: undefined;
+  Image: { filename: string, baseURL: string };
   ImageComponent: undefined;
 };
 
