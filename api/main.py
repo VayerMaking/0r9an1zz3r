@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import random
 import hashlib
 import string
+import sys
 # flask
 from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
@@ -79,8 +80,8 @@ def index():
     return str(map)
 
 
-@app.route('/classify', methods=['POST'])
-def classify():
+@app.route('/upload', methods=['POST'])
+def upload():
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
     print("\nReceived image File name : " + imagefile.filename)
@@ -104,31 +105,42 @@ def getImages():
     return jsonify(images)
 
 
+@app.route('/getCategories', methods=['GET'])
+def getCategories():
+    # categories = Image.query.limit(15).all()
+    images = Image.query.limit(15).all()
+    tags = []
+    for image in images:
+        tags.append(image.tag)
+    return jsonify(tags)
+
+
 @app.route('/image/<path:filename>')
 def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@app.route('/classify_color', methods=['POST'])
-def classify_color():
-    imagefile = request.files['image']
-    filename = werkzeug.utils.secure_filename(imagefile.filename)
-    print("\nReceived image File name : " + imagefile.filename)
-    file_extension = os.path.splitext(filename)[1]
-    new_filename = random_string(64)  # + file_extension
-    imagefile.save(os.path.join("uploads", new_filename))
+@app.route('/classify_color/<path:filename>', methods=['POST'])
+def classify_color(filename):
+    image = Image.query.filter_by(filename=filename).first()
     # color recognition logic
+    file_path = sys.path[0] + 'uploads/' + image.filename
+    colors = cd.get_colors(cd.get_image(file_path), 3, True)
+    colors_array = []
+    for count, value in enumerate(colors):
+        print(color_name.convert_rgb_to_names(count))
+        colors_array.append(
+            color_name.convert_rgb_to_names(value).split(": ")[1])
 
-    colors = cd.get_colors(cd.get_image(
-        'uploads/Panda_BradJosephs-4CROP_Web.jpg'), 8, True)
-    for i in colors:
-        print(color_name.convert_rgb_to_names(i))
+    image.colors = colors_array
+    db.session.add(image)
+    db.session.commit()
     # image = Image(filename=new_filename, colors=colors)
 
     # db.session.add(image)
     # db.session.commit()
 
-    return "ok"
+    return jsonify(image)
 
 
 def random_string(length):
