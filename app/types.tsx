@@ -19,6 +19,8 @@ export type RootStackParamList = {
   NotFound: undefined;
   Image: { filename: string, baseURL: string };
   ImageComponent: undefined;
+  Login: { username: string, password: string };
+  Profile: undefined;
 };
 
 export type Props = NativeStackScreenProps<RootStackParamList, 'Image'>;
@@ -31,6 +33,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type RootTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
+  TabThree: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
