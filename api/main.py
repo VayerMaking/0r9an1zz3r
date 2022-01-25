@@ -65,6 +65,7 @@ class Image(db.Model):
     filename: str
     tag: str
     is_classified: bool
+    user_id: str
     #colors: List[ChildType]
 
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +73,20 @@ class Image(db.Model):
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
+    user_id = db.Column(db.String(36))
+
+
+@dataclass
+class User(db.Model):
+    id: int
+    username: str
+    email: str
+    password: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15))
+    email = db.Column(db.String(20))
+    password = db.Column(db.String(64))
 
 
 @app.route('/', methods=['GET'])
@@ -141,6 +156,12 @@ def classify_color(filename):
     # db.session.commit()
 
     return jsonify(image)
+
+
+@app.route('/getProfile/<path:username>', methods=['POST'])
+def getProfile(username):
+    profile = User.query.filter_by(username=username).first()
+    return jsonify(profile)
 
 
 def random_string(length):
