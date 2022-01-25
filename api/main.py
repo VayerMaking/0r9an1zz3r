@@ -116,14 +116,14 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.limit(15).all()
+    images = Image.query.order_by(Image.id.desc()).limit(15).all()
     return jsonify(images)
 
 
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.limit(15).all()
+    images = Image.query.distinct(Image.tag).all()
     tags = []
     for image in images:
         tags.append(image.tag)
