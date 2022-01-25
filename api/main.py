@@ -77,7 +77,7 @@ class Image(db.Model):
 
 
 @dataclass
-class User(db.Model):
+class Profile(db.Model):
     id: int
     username: str
     user_email: str
@@ -86,7 +86,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15))
     user_email = db.Column(db.String(20))
-    user_password = db.Column(db.String(64))
+    user_pass = db.Column(db.String(64))
 
 
 @app.route('/', methods=['GET'])
@@ -158,9 +158,9 @@ def classify_color(filename):
     return jsonify(image)
 
 
-@app.route('/getProfile/<path:username>', methods=['POST'])
+@app.route('/getProfile/<path:username>', methods=['GET'])
 def getProfile(username):
-    profile = User.query.filter_by(username=username).first()
+    profile = Profile.query.filter_by(username=username).first()
     return jsonify(profile)
 
 
