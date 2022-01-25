@@ -80,13 +80,13 @@ class Image(db.Model):
 class User(db.Model):
     id: int
     username: str
-    email: str
-    password: str
+    user_email: str
+    user_pass: str
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15))
-    email = db.Column(db.String(20))
-    password = db.Column(db.String(64))
+    user_email = db.Column(db.String(20))
+    user_password = db.Column(db.String(64))
 
 
 @app.route('/', methods=['GET'])
