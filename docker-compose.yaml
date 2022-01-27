@@ -31,6 +31,22 @@ services:
     networks:
       - 0r9an1zz3r
 
+  auth:
+    build: ./auth
+    depends_on:
+      - redis-db
+    ports:
+      - "5000:5000"
+    networks:
+      - 0r9an1zz3r
+
+  redis-db:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - 0r9an1zz3r
+
 volumes:
     db_volume:
 
