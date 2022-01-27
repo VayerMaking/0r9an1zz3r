@@ -11,7 +11,7 @@ async function verifyToken(req: Request, _: Response, next: NextFunction) {
     if (!user)
         next(createHttpError(404, "User not found"));
 
-    const isblacklistedTokens: boolean = await redisClient.SISMEMBER('BL_' + user.id, token);
+    const isblacklistedTokens: boolean = await redisClient.SISMEMBER('BL_' + user.id.toString(), token);
     if (isblacklistedTokens)
         next(createHttpError(401, "Token is blacklisted"));
 
@@ -34,7 +34,7 @@ async function verifyRefreshToken(req: Request, _: Response, next: NextFunction)
         return next(createHttpError(404, "User not found"));
 
     let tokenStore: string[] = [];
-    const pattern: string = '*' + user.id + "_" + '*';
+    const pattern: string = '*' + user.id.toString() + "_" + '*';
     const keys = await redisClient.keys(pattern);
 
     for (let i = 0; i < keys.length; i++) {

@@ -10,7 +10,7 @@ export default {
             process.exit(1);
         }
     },
-    findById: async (id: string) => {
+    findById: async (id: number) => {
         try {
             return await prisma.user.findFirst({ where: { id: id } })
         } catch (err) {
@@ -26,7 +26,7 @@ export default {
             process.exit(1);
         }
     },
-    deleteOne: async (id: string) => {
+    deleteOne: async (id: number) => {
         try {
             return await prisma.user.delete({ where: { id: id } })
         } catch (err) {
