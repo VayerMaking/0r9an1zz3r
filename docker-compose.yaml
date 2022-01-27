@@ -30,6 +30,8 @@ services:
       - db
     networks:
       - 0r9an1zz3r
+    volumes:
+      - image_volume:/uploads
 
   auth:
     build: ./auth
@@ -49,6 +51,7 @@ services:
 
 volumes:
     db_volume:
+    image_volume:
 
 networks:
     0r9an1zz3r:
