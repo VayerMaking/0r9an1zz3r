@@ -37,8 +37,8 @@ export default {
             return next(createHttpError(400, "Invalid password credential"))
 
         const jti = uuidv4();
-        const accessToken: string = util.generateAccessToken(user.id.toString(), jti);
-        const refreshToken: string = await util.generateRefreshToken(user.id.toString(), jti);
+        const accessToken: string = util.generateAccessToken(user.id, jti);
+        const refreshToken: string = await util.generateRefreshToken(user.id, jti);
 
         return res.status(200).json({
             success: true,
@@ -56,8 +56,8 @@ export default {
     generateTokens: async (req: Request, res: Response, _: NextFunction) => {
 
         const jti = uuidv4();
-        const accessToken: string = util.generateAccessToken(req.user.id.toString(), jti);
-        const refreshToken: string = await util.generateRefreshToken(req.user.id.toString(), jti);
+        const accessToken: string = util.generateAccessToken(req.user.id, jti);
+        const refreshToken: string = await util.generateRefreshToken(req.user.id, jti);
 
         return res
             .status(200)

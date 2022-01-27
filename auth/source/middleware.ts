@@ -7,7 +7,7 @@ import { redisClient } from ".";
 async function verifyToken(req: Request, _: Response, next: NextFunction) {
     const token: string = req.headers.authorization.split(' ')[1];
     const decodedToken: string | jwt.JwtPayload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user = await userController.findById((<any>decodedToken).sub);
+    const user = await userController.findById(parseInt((<any>decodedToken).sub));
     if (!user)
         next(createHttpError(404, "User not found"));
 
@@ -29,7 +29,7 @@ async function verifyRefreshToken(req: Request, _: Response, next: NextFunction)
 
     const decodedToken: string | jwt.JwtPayload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
-    const user = await userController.findById((<any>decodedToken).sub);
+    const user = await userController.findById(parseInt((<any>decodedToken).sub));
     if (!user)
         return next(createHttpError(404, "User not found"));
 

@@ -21,7 +21,7 @@ export async function comparePassword(password: string, hash: string): Promise<b
     });
 }
 
-export function generateAccessToken(userId: string, uuid: string): string {
+export function generateAccessToken(userId: number, uuid: string): string {
     const token: string = jwt.sign(
         {
             sub: userId,
@@ -35,7 +35,7 @@ export function generateAccessToken(userId: string, uuid: string): string {
     return token;
 }
 
-export async function generateRefreshToken(userId: string, uuid: string): Promise<string> {
+export async function generateRefreshToken(userId: number, uuid: string): Promise<string> {
     const token: string = jwt.sign(
         {
             sub: userId,
@@ -48,7 +48,7 @@ export async function generateRefreshToken(userId: string, uuid: string): Promis
     );
 
     await redisClient.set(
-        userId + "_" + uuid,
+        userId.toString() + "_" + uuid,
         JSON.stringify({
             refreshToken: token,
             expiresIn: process.env.REFRESH_TOKEN_AGE
@@ -62,12 +62,12 @@ export async function generateRefreshToken(userId: string, uuid: string): Promis
     return token;
 }
 
-export async function deleteTokens(userId: string, token: string): Promise<void> {
+export async function deleteTokens(userId: number, token: string): Promise<void> {
     try {
         const decoded = jwt.decode(token, { complete: true });
         const jti = decoded.payload.jti;
         await redisClient.del(userId + '_' + jti);
-        await redisClient.SADD('BL_' + userId, token);
+        await redisClient.SADD('BL_' + userId.toString(), token);
     } catch (err) {
         console.error(err);
         process.exit(1);
