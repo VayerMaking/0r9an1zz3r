@@ -75,6 +75,23 @@ class Image(db.Model):
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
 
 
+@dataclass
+class User(db.Model):
+    id: int
+    email: str
+    username: str
+    salt: str
+    hash: str
+    provider: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(30))
+    username = db.Column(db.String(30))
+    salt = db.Column(db.String(64))
+    hash = db.Column(db.String(64))
+    provider = db.Column(db.String(64))
+
+
 @app.route('/', methods=['GET'])
 def index():
     map = JustSampleData.query.all()
@@ -147,7 +164,11 @@ def classify_color(filename):
 @app.route('/getUser', methods=['GET'])
 def getUser():
     encoded_jwt = request.headers['Authorization'].split(' ')[1]
-    return jwt.decode(encoded_jwt, os.getenv('JWT_SECRET'), algorithms=["HS256"])
+    decoded_jwt = jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"])
+    decoded_id = decoded_jwt['sub']
+    user = User.query.filter_by(id=decoded_id).first()
+    return user
 
 
 def random_string(length):
