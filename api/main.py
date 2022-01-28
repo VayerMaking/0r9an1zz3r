@@ -4,6 +4,7 @@ import random
 import hashlib
 import string
 import sys
+import jwt
 # flask
 from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
@@ -141,6 +142,12 @@ def classify_color(filename):
     # db.session.commit()
 
     return jsonify(image)
+
+
+@app.route('/getUser', methods=['GET'])
+def getUser():
+    encoded_jwt = request.headers['Authorization'].split(' ')[1]
+    return jwt.decode(encoded_jwt, os.getenv('JWT_SECRET'), algorithms=["HS256"])
 
 
 def random_string(length):
