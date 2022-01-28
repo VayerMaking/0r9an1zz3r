@@ -1,4 +1,4 @@
-import { User, PrismaClient } from "@prisma/client";
+import { user, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default {
@@ -20,7 +20,7 @@ export default {
     },
     createNew: async (data: object) => {
         try {
-            return await prisma.user.create({ data: (<User>data) });
+            return await prisma.user.create({ data: (<user>data) });
         } catch (err) {
             console.error(err);
             process.exit(1);

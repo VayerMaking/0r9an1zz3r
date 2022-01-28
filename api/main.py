@@ -5,6 +5,7 @@ import hashlib
 import string
 import sys
 import jwt
+import json
 # flask
 from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
@@ -52,15 +53,6 @@ prediction.loadModel()
 
 
 @dataclass
-class JustSampleData(db.Model):
-    id: int
-    data: str
-
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(50))
-
-
-@dataclass
 class Image(db.Model):
     id: int
     filename: str
@@ -90,12 +82,6 @@ class User(db.Model):
     salt = db.Column(db.String(64))
     hash = db.Column(db.String(64))
     provider = db.Column(db.String(64))
-
-
-@app.route('/', methods=['GET'])
-def index():
-    map = JustSampleData.query.all()
-    return str(map)
 
 
 @app.route('/upload', methods=['POST'])
@@ -164,11 +150,11 @@ def classify_color(filename):
 @app.route('/getUser', methods=['GET'])
 def getUser():
     encoded_jwt = request.headers['Authorization'].split(' ')[1]
-    decoded_jwt = jwt.decode(encoded_jwt, os.getenv(
-        'JWT_SECRET'), algorithms=["HS256"])
-    decoded_id = decoded_jwt['sub']
+    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"]))
+    decoded_id = json.loads(decoded_jwt)["sub"]
     user = User.query.filter_by(id=decoded_id).first()
-    return user
+    return jsonify(user)
 
 
 def random_string(length):

@@ -12,7 +12,7 @@ import cors from "cors";
 import verifyMiddleware from "./middleware";
 
 // model type
-import { User } from "@prisma/client";
+import { user } from "@prisma/client";
 
 // routes
 import local from "./routes/local.route";
@@ -36,7 +36,7 @@ async function connectRedis() {
 // decalre Request interface props
 declare module "express" {
     export interface Request {
-        user: User;
+        user: user;
         token: string;
     }
 }
