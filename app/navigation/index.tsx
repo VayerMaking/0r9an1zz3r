@@ -9,6 +9,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -65,44 +66,51 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
-      <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
-      />
-      <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <BottomTab.Screen
-        name="TabThree"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
+      {AsyncStorage.getItem('access') === null ? (
+        <>
+          <BottomTab.Screen
+            name="TabOne"
+            component={TabOneScreen}
+            options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
+              title: 'Home',
+              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+              headerRight: () => (
+                <Pressable
+                  onPress={() => navigation.navigate('Profile')}
+                  style={({ pressed }) => ({
+                    opacity: pressed ? 0.5 : 1,
+                  })}>
+                  <FontAwesome
+                    name="info-circle"
+                    size={25}
+                    color={Colors[colorScheme].text}
+                    style={{ marginRight: 15 }}
+                  />
+                </Pressable>
+              ),
+            })}
+          />
+          <BottomTab.Screen
+            name="TabTwo"
+            component={TabTwoScreen}
+            options={{
+              title: 'Search',
+              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            }}
+          />
+        </>
+      ) : (
+        <BottomTab.Screen
+          name="TabThree"
+          component={ProfileScreen}
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          }}
+        />
+      )}
+
+
     </BottomTab.Navigator>
   );
 }
