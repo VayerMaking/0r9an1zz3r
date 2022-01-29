@@ -90,20 +90,13 @@ class User(db.Model):
 def upload():
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
-    # print("\nReceived image File name : " + imagefile.filename)
-    file_extension = os.path.splitext(filename)[1]
-    new_filename = random_string(64)  # + file_extension
+    new_filename = random_string(64)
     imagefile.save(os.path.join("uploads", new_filename))
     predictions, probabilities = prediction.classifyImage(
         os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
-    encoded_jwt = request.headers['Authorization'].split(' ')[1]
-    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
-        'JWT_SECRET'), algorithms=["HS256"]))
-    decoded_id = json.loads(decoded_jwt)["sub"]
-
     image = Image(filename=new_filename,
-                  tag=predictions[0], user_id=decoded_id, is_classified=True)
+                  tag=predictions[0], user_id=get_user_id(), is_classified=True)
 
     db.session.add(image)
     db.session.commit()
@@ -113,14 +106,14 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id()).limit(15).all()
     return jsonify(images)
 
 
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id()).limit(15).all()
     tags = []
     for image in images:
         tags.append(image.tag)
@@ -157,16 +150,20 @@ def classify_color(filename):
 
 @app.route('/getUser', methods=['GET'])
 def getUser():
-    encoded_jwt = request.headers['Authorization'].split(' ')[1]
-    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
-        'JWT_SECRET'), algorithms=["HS256"]))
-    decoded_id = json.loads(decoded_jwt)["sub"]
-    user = User.query.filter_by(id=decoded_id).first()
+    user = User.query.filter_by(id=get_user_id()).first()
     return jsonify(user)
 
 
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
+
+
+def get_user_id():
+    encoded_jwt = request.headers['Authorization'].split(' ')[1]
+    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"]))
+    decoded_id = json.loads(decoded_jwt)["sub"]
+    return decoded_id
 
 
 if __name__ == "__main__":
