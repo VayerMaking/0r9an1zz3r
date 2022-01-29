@@ -21,5 +21,6 @@ model image {
   filename String
   tag String
   is_classified Boolean
-  colors ARRAY
+  colors String[]
+  user_id String
 }

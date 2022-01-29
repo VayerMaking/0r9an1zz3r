@@ -59,12 +59,14 @@ class Image(db.Model):
     tag: str
     is_classified: bool
     #colors: List[ChildType]
+    user_id: str
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
+    user_id = db.Column(db.String(64))
 
 
 @dataclass
@@ -88,14 +90,20 @@ class User(db.Model):
 def upload():
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
-    print("\nReceived image File name : " + imagefile.filename)
+    # print("\nReceived image File name : " + imagefile.filename)
     file_extension = os.path.splitext(filename)[1]
     new_filename = random_string(64)  # + file_extension
     imagefile.save(os.path.join("uploads", new_filename))
     predictions, probabilities = prediction.classifyImage(
         os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
-    image = Image(filename=new_filename, tag=predictions[0])
+    encoded_jwt = request.headers['Authorization'].split(' ')[1]
+    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"]))
+    decoded_id = json.loads(decoded_jwt)["sub"]
+
+    image = Image(filename=new_filename,
+                  tag=predictions[0], user_id=decoded_id, is_classified=True)
 
     db.session.add(image)
     db.session.commit()
