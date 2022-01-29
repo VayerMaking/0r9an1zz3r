@@ -163,7 +163,7 @@ def get_user_id():
     decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
         'JWT_SECRET'), algorithms=["HS256"]))
     decoded_id = json.loads(decoded_jwt)["sub"]
-    return decoded_id
+    return int(decoded_id)
 
 
 if __name__ == "__main__":
