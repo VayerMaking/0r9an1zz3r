@@ -58,6 +58,7 @@ class Image(db.Model):
     filename: str
     tag: str
     is_classified: bool
+    user_id: str
     #colors: List[ChildType]
     user_id: str
 
@@ -66,8 +67,20 @@ class Image(db.Model):
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
-    user_id = db.Column(db.String(64))
+    user_id = db.Column(db.Integer)
 
+
+@dataclass
+class Profile(db.Model):
+    id: int
+    username: str
+    user_email: str
+    user_pass: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15))
+    user_email = db.Column(db.String(20))
+    user_pass = db.Column(db.String(64))
 
 @dataclass
 class User(db.Model):
@@ -106,14 +119,14 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.filter_by(user_id=get_user_id()).limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id()).order_by(Image.id.desc()).limit(15).all()
     return jsonify(images)
 
 
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.filter_by(user_id=get_user_id()).limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id()).distinct(Image.tag).limit(15).all()
     tags = []
     for image in images:
         tags.append(image.tag)
