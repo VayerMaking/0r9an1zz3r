@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { RootStackScreenProps } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { useAuthContext } from '../components/User/UserContext';
+import { axiosInstance, ILoginRequest } from '../utils/auth';
+import { getAccessToken, getRefreshToken, setAuthTokens } from 'react-native-axios-jwt';
 
 
 export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
-    let [email, setEmail] = useState<string>();
-    let [password, setPassword] = useState<string>();
+    let [email, setEmail] = useState<string>('');
+    let [password, setPassword] = useState<string>('');
 
+    const baseURL = 'http://192.168.88.244:5000';
 
+    const login = async (params: ILoginRequest) => {
+        const response = await axiosInstance.post('/login', params)
+
+        // save tokens to storage
+        await setAuthTokens({
+            accessToken: response.data.data.access,
+            refreshToken: response.data.data.refresh
+        })
+
+        navigation.push('Root', { screen: 'TabThree' });
+    }
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>HeyAPP</Text>
@@ -16,6 +33,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
                     style={styles.inputText}
                     placeholder="Email..."
                     placeholderTextColor="#003f5c"
+                    autoCapitalize='none'
                     onChangeText={text => setEmail(text)} />
             </View>
             <View style={styles.inputView} >
@@ -29,7 +47,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
             <TouchableOpacity>
                 <Text style={styles.forgot}>Forgot Password?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.loginBtn}>
+            <TouchableOpacity style={styles.loginBtn} onPress={() => login({ email, password })}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity>

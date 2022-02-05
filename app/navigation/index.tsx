@@ -21,6 +21,7 @@ import ImageScreen from '../screens/ImageScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import ProfileScreen from '../screens/ProfileScreen';
+import LoginScreen from '../screens/LoginScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -44,6 +45,7 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Screen name="Image" component={ImageScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
@@ -66,49 +68,49 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
-      {AsyncStorage.getItem('access') === null ? (
-        <>
-          <BottomTab.Screen
-            name="TabOne"
-            component={TabOneScreen}
-            options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-              title: 'Home',
-              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-              headerRight: () => (
-                <Pressable
-                  onPress={() => navigation.navigate('Profile')}
-                  style={({ pressed }) => ({
-                    opacity: pressed ? 0.5 : 1,
-                  })}>
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme].text}
-                    style={{ marginRight: 15 }}
-                  />
-                </Pressable>
-              ),
-            })}
-          />
-          <BottomTab.Screen
-            name="TabTwo"
-            component={TabTwoScreen}
-            options={{
-              title: 'Search',
-              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            }}
-          />
-        </>
-      ) : (
-        <BottomTab.Screen
-          name="TabThree"
-          component={ProfileScreen}
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-      )}
+      {/* {AsyncStorage.getItem('access') !== undefined ? (
+        <> */}
+      <BottomTab.Screen
+        name="TabOne"
+        component={TabOneScreen}
+        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}>
+              <FontAwesome
+                name="info-circle"
+                size={25}
+                color={Colors[colorScheme].text}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
+        })}
+      />
+      <BottomTab.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      {/* </>
+      ) : ( */}
+      <BottomTab.Screen
+        name="TabThree"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      {/* )} */}
 
 
     </BottomTab.Navigator>

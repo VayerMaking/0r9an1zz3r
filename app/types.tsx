@@ -19,7 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Image: { filename: string, baseURL: string };
   ImageComponent: undefined;
-  Login: { username: string, password: string };
+  Login: undefined;
   Profile: undefined;
 };
 
