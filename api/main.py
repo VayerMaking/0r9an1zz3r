@@ -106,7 +106,8 @@ def upload():
     predictions, probabilities = prediction.classifyImage(
         os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
-    image = Image(filename=new_filename, tag=predictions[0])
+    image = Image(filename=new_filename,
+                  tag=predictions[0], user_id=get_user_id(request), is_classified=True)
 
     db.session.add(image)
     db.session.commit()
@@ -116,14 +117,16 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.order_by(Image.id.desc()).limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id(
+        request)).order_by(id.desc()).limit(15).all()
     return jsonify(images)
 
 
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.distinct(Image.tag).all()
+    images = Image.query.filter_by(
+        user_id=get_user_id(request)).limit(15).all()
     tags = []
     for image in images:
         tags.append(image.tag)
@@ -158,14 +161,24 @@ def classify_color(filename):
     return jsonify(image)
 
 
-@app.route('/getProfile/<path:username>', methods=['GET'])
-def getProfile(username):
-    profile = Profile.query.filter_by(username=username).first()
-    return jsonify(profile)
+@app.route('/getUser', methods=['GET'])
+def getUser():
+    user = User.query.filter_by(id=get_user_id(request)).first()
+    return jsonify(user)
 
 
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
+
+
+def get_user_id(req):
+    encoded_jwt = req.headers['Authorization'].split(' ')[1]
+    print("encoded_jwt: ", encoded_jwt, flush=True)
+    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"]))
+    print("decoded_jwt: ", decoded_jwt, flush=True)
+    decoded_id = json.loads(decoded_jwt)["sub"]
+    return str(decoded_id)
 
 
 if __name__ == "__main__":

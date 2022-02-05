@@ -3,6 +3,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { withSafeAreaInsets } from "react-native-safe-area-context";
 import { Props } from "../types";
 import { useNavigation } from '@react-navigation/native';
+import { axiosInstance } from "../utils/auth";
+// import useAxios from "../hooks/useAxios";
+
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -47,9 +50,40 @@ export default function ImageComponent() {
     }
     async function fetchImages() {
         const url = baseURL + '/getImages';
-        const response = await fetch(url);
-        const json = await response.json();
-        setImages(json);
+        try {
+            const response = await axiosInstance.get(url);
+            console.log(JSON.stringify(response));
+            const json = await response.data;
+            console.log("images: ", images);
+            console.log("json: ", json);
+
+
+            if (images.length === 0) {
+                setImages(images = json);
+                console.log("setting intial images");
+                return;
+            }
+            //  const absent = images.filter(image => !json.includes(image));
+            const absent = json.filter(({ id }) => !images.find(image => image.id == id));
+            console.log("absent: ", absent.length);
+            //console.log("images bf: ", images.slice(-1)[0]);
+            // if (isInitialFetch) {
+            //     setImages(json);
+            //     console.log('setting images')
+            //     isInitialFetch = false;
+            // } else {
+            const newImages: any = [...absent, ...images];
+            setImages(newImages);
+            // }
+
+            //console.log("images after: ", images.slice(-1)[0]);
+            console.log("images: ", images.length);
+            return;
+        } catch (err) {
+            console.warn(err)
+
+        }
+
     }
     //const newImages = useMemo(() => fetchImages(), []);
     // kolcho --> useMemo or useCalback
