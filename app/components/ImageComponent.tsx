@@ -1,42 +1,20 @@
 import { View, Text, Image, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import React, { useState, useEffect, useMemo } from 'react';
-import { withSafeAreaInsets } from "react-native-safe-area-context";
-import { Props } from "../types";
 import { useNavigation } from '@react-navigation/native';
+import useAxios from "../hooks/useAxios";
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-const styles = StyleSheet.create({
-    imageStyles: {
-        width: 200,
-        height: 200,
-    },
-    highlight: {
-        fontWeight: '700',
-    },
-    container: {
-        flex: 1,
-        marginTop: 8,
-        backgroundColor: "aliceblue",
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'flex-start' // if you want to fill rows left to right
-    },
-    item: {
-        width: '50%' // is 50% of container width
-    },
-    imageText: {
-        color: "white",
-    },
-});
-
 export default function ImageComponent() {
-    const [images, setImages] = useState([]);
+    let [images, setImages] = useState([]);
     const baseURL = 'http://192.168.88.244:80';
+    // const baseURL = 'http://18.191.82.215:80';
     const [refreshing, setRefreshing] = React.useState(false);
     const navigation = useNavigation();
+    // let isInitialFetch: boolean = true;
+    const axiosInstance = useAxios();
 
     interface IImage {
         id: string,
@@ -47,9 +25,31 @@ export default function ImageComponent() {
     }
     async function fetchImages() {
         const url = baseURL + '/getImages';
-        const response = await fetch(url);
-        const json = await response.json();
-        setImages(json);
+        const response = await axiosInstance.get(url);
+        const json = await response.data.data();
+        console.log("images: ", images);
+
+        if (images.length === 0) {
+            setImages(images = json);
+            console.log("setting intial images");
+            return;
+        }
+        //  const absent = images.filter(image => !json.includes(image));
+        const absent = json.filter(image => !images.includes(image));
+        console.log("absent: ", absent.length);
+        //console.log("images bf: ", images.slice(-1)[0]);
+        // if (isInitialFetch) {
+        //     setImages(json);
+        //     console.log('setting images')
+        //     isInitialFetch = false;
+        // } else {
+        const newImages: any = [...absent, ...images].reverse();
+        setImages(newImages);
+        // }
+
+        //console.log("images after: ", images.slice(-1)[0]);
+        console.log("images: ", images.length);
+        return;
     }
     //const newImages = useMemo(() => fetchImages(), []);
     // kolcho --> useMemo or useCalback
@@ -86,10 +86,7 @@ export default function ImageComponent() {
                                 onPress={() => navigation.navigate('Image', { filename: i.filename, baseURL: baseURL })}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
 
-                                <Text>{
-                                    //@ts-ignore
-                                    i.tag
-                                }</Text>
+                                <Text>{i.tag}</Text>
                             </TouchableOpacity>
                         );
                     })
@@ -102,3 +99,26 @@ export default function ImageComponent() {
 
 }
 
+const styles = StyleSheet.create({
+    imageStyles: {
+        width: 200,
+        height: 200,
+    },
+    highlight: {
+        fontWeight: '700',
+    },
+    container: {
+        flex: 1,
+        marginTop: 8,
+        backgroundColor: "aliceblue",
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start' // if you want to fill rows left to right
+    },
+    item: {
+        width: '50%' // is 50% of container width
+    },
+    imageText: {
+        color: "white",
+    },
+});

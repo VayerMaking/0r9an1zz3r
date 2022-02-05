@@ -4,6 +4,8 @@ import random
 import hashlib
 import string
 import sys
+import jwt
+import json
 # flask
 from flask import Flask
 from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
@@ -51,15 +53,6 @@ prediction.loadModel()
 
 
 @dataclass
-class JustSampleData(db.Model):
-    id: int
-    data: str
-
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(50))
-
-
-@dataclass
 class Image(db.Model):
     id: int
     filename: str
@@ -67,13 +60,14 @@ class Image(db.Model):
     is_classified: bool
     user_id: str
     #colors: List[ChildType]
+    user_id: str
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
-    user_id = db.Column(db.String(36))
+    user_id = db.Column(db.Integer)
 
 
 @dataclass
@@ -88,25 +82,34 @@ class Profile(db.Model):
     user_email = db.Column(db.String(20))
     user_pass = db.Column(db.String(64))
 
+@dataclass
+class User(db.Model):
+    id: int
+    email: str
+    username: str
+    salt: str
+    hash: str
+    provider: str
 
-@app.route('/', methods=['GET'])
-def index():
-    map = JustSampleData.query.all()
-    return str(map)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(30))
+    username = db.Column(db.String(30))
+    salt = db.Column(db.String(64))
+    hash = db.Column(db.String(64))
+    provider = db.Column(db.String(64))
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
-    print("\nReceived image File name : " + imagefile.filename)
-    file_extension = os.path.splitext(filename)[1]
-    new_filename = random_string(64)  # + file_extension
+    new_filename = random_string(64)
     imagefile.save(os.path.join("uploads", new_filename))
     predictions, probabilities = prediction.classifyImage(
         os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
-    image = Image(filename=new_filename, tag=predictions[0])
+    image = Image(filename=new_filename,
+                  tag=predictions[0], user_id=get_user_id(), is_classified=True)
 
     db.session.add(image)
     db.session.commit()
@@ -116,14 +119,14 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.order_by(Image.id.desc()).limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id()).order_by(Image.id.desc()).limit(15).all()
     return jsonify(images)
 
 
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.distinct(Image.tag).all()
+    images = Image.query.filter_by(user_id=get_user_id()).distinct(Image.tag).limit(15).all()
     tags = []
     for image in images:
         tags.append(image.tag)
@@ -158,14 +161,22 @@ def classify_color(filename):
     return jsonify(image)
 
 
-@app.route('/getProfile/<path:username>', methods=['GET'])
-def getProfile(username):
-    profile = Profile.query.filter_by(username=username).first()
-    return jsonify(profile)
+@app.route('/getUser', methods=['GET'])
+def getUser():
+    user = User.query.filter_by(id=get_user_id()).first()
+    return jsonify(user)
 
 
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
+
+
+def get_user_id():
+    encoded_jwt = request.headers['Authorization'].split(' ')[1]
+    decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
+        'JWT_SECRET'), algorithms=["HS256"]))
+    decoded_id = json.loads(decoded_jwt)["sub"]
+    return str(decoded_id)
 
 
 if __name__ == "__main__":
