@@ -7,8 +7,8 @@ import sys
 import jwt
 import json
 # flask
-from flask import Flask
-from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory
+from flask import Flask, Response
+from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
@@ -119,21 +119,24 @@ def handle_exception(e):
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    id = get_user_id(request)
-    imagefile = request.files['image']
-    filename = werkzeug.utils.secure_filename(imagefile.filename)
-    new_filename = random_string(64)
-    imagefile.save(os.path.join("uploads", new_filename))
-    predictions, probabilities = prediction.classifyImage(
-        os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
+    try:
+        id = get_user_id(request)
+        imagefile = request.files['image']
+        filename = werkzeug.utils.secure_filename(imagefile.filename)
+        new_filename = random_string(64)
+        imagefile.save(os.path.join("uploads", new_filename))
+        predictions, probabilities = prediction.classifyImage(
+            os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
-    image = Image(filename=new_filename,
-                  tag=predictions[0], user_id=id, is_classified=True)
+        image = Image(filename=new_filename,
+                      tag=predictions[0], user_id=id, is_classified=True)
 
-    db.session.add(image)
-    db.session.commit()
+        db.session.add(image)
+        db.session.commit()
 
-    return "ok"
+        return "ok"
+    except UnicodeDecodeError:
+        abort(404, Response('Invalid Access Token Format'))
 
 
 @app.route('/getImages', methods=['GET'])
@@ -180,6 +183,16 @@ def classify_color(filename):
     # db.session.commit()
 
     return jsonify(image)
+
+
+@app.route('/ocr/<image_id>', methods=['POST'])
+def ocr(image_id):
+    image = Image.query.filter_by(id=image_id).first()
+    # color recognition logic
+    file_path = sys.path[0] + 'uploads/' + image.filename
+    ocr_result = pytesseract.image_to_string(Image.open(file_path))
+
+    return jsonify(ocr_result)
 
 
 @app.route('/getUser', methods=['GET'])
