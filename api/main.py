@@ -61,7 +61,7 @@ class Image(db.Model):
     tag: str
     is_classified: bool
     user_id: str
-    #colors: List[ChildType]
+    colors: List[str]
     user_id: str
 
     id = db.Column(db.Integer, primary_key=True)
@@ -102,21 +102,6 @@ class User(db.Model):
     provider = db.Column(db.String(64))
 
 
-@app.errorhandler(HTTPException)
-def handle_exception(e):
-    """Return JSON instead of HTML for HTTP errors."""
-    # start with the correct headers and status code from the error
-    response = e.get_response()
-    # replace the body with JSON
-    response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
-    })
-    response.content_type = "application/json"
-    return response
-
-
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
@@ -149,6 +134,8 @@ def upload():
         return "ok"
     except UnicodeDecodeError:
         abort(404, Response('Invalid Access Token Format'))
+    except jwt.ExpiredSignatureError:
+        abort(404, Response('Signature Has Expired'))
 
 
 @app.route('/getImages', methods=['GET'])
