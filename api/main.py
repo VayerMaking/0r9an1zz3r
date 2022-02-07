@@ -125,11 +125,23 @@ def upload():
         filename = werkzeug.utils.secure_filename(imagefile.filename)
         new_filename = random_string(64)
         imagefile.save(os.path.join("uploads", new_filename))
+
         predictions, probabilities = prediction.classifyImage(
             os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
+        file_path = sys.path[0] + '/uploads/' + new_filename
+
+        colors = cd.get_colors(cd.get_image(file_path), 3, True)
+        colors_array = []
+        for count, value in enumerate(colors):
+            print(color_name.convert_rgb_to_names(value), flush=True)
+            colors_array.append(
+                color_name.convert_rgb_to_names(value).split(": ")[1])
+            if count >= 3:
+                break
+
         image = Image(filename=new_filename,
-                      tag=predictions[0], user_id=id, is_classified=True)
+                      tag=predictions[0], user_id=id, is_classified=True, colors=colors_array)
 
         db.session.add(image)
         db.session.commit()
