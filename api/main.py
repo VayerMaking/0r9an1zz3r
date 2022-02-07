@@ -174,9 +174,11 @@ def classify_color(image_id):
     colors = cd.get_colors(cd.get_image(file_path), 3, True)
     colors_array = []
     for count, value in enumerate(colors):
-        print(color_name.convert_rgb_to_names(count))
+        print(color_name.convert_rgb_to_names(value), flush=True)
         colors_array.append(
             color_name.convert_rgb_to_names(value).split(": ")[1])
+        if count >= 3:
+            break
 
     image.colors = colors_array
     db.session.add(image)
