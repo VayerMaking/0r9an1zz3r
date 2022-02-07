@@ -12,6 +12,7 @@ from flask import render_template, request, flash, redirect, url_for, session, j
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
+from sqlalchemy import desc
 from dataclasses import dataclass
 from typing import List
 import werkzeug
@@ -122,7 +123,7 @@ def upload():
 @app.route('/getImages', methods=['GET'])
 def getImages():
     images = Image.query.filter_by(user_id=get_user_id(
-        request)).order_by(id.desc()).limit(15).all()
+        request)).order_by(desc(Image.id)).limit(15).all()
     return jsonify(images)
 
 
@@ -169,6 +170,13 @@ def classify_color(filename):
 def getUser():
     user = User.query.filter_by(id=get_user_id(request)).first()
     return jsonify(user)
+
+
+@app.route('/getImageDetails/<image_id>', methods=['GET'])
+def getImageDetails(image_id):
+    image = Image.query.filter_by(
+        user_id=get_user_id(request), id=image_id).first()
+    return jsonify(image)
 
 
 def random_string(length):
