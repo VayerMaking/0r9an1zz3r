@@ -82,6 +82,7 @@ class Profile(db.Model):
     user_email = db.Column(db.String(20))
     user_pass = db.Column(db.String(64))
 
+
 @dataclass
 class User(db.Model):
     id: int
@@ -101,6 +102,7 @@ class User(db.Model):
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    id = get_user_id(request)
     imagefile = request.files['image']
     filename = werkzeug.utils.secure_filename(imagefile.filename)
     new_filename = random_string(64)
@@ -109,7 +111,7 @@ def upload():
         os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
 
     image = Image(filename=new_filename,
-                  tag=predictions[0], user_id=get_user_id(request), is_classified=True)
+                  tag=predictions[0], user_id=id, is_classified=True)
 
     db.session.add(image)
     db.session.commit()
@@ -127,7 +129,8 @@ def getImages():
 @app.route('/getCategories', methods=['GET'])
 def getCategories():
     # categories = Image.query.limit(15).all()
-    images = Image.query.filter_by(user_id=get_user_id(request)).distinct(Image.tag).limit(15).all()
+    images = Image.query.filter_by(user_id=get_user_id(
+        request)).distinct(Image.tag).limit(15).all()
     tags = []
     for image in images:
         tags.append(image.tag)
