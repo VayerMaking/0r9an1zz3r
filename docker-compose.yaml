@@ -31,7 +31,7 @@ services:
     networks:
       - 0r9an1zz3r
     volumes:
-      - image_volume:/uploads
+      - image_volume:/api/uploads
 
   auth:
     build: ./auth
