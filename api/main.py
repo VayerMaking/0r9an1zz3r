@@ -162,11 +162,12 @@ def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@app.route('/classify_color/<path:filename>', methods=['POST'])
-def classify_color(filename):
-    image = Image.query.filter_by(filename=filename).first()
+@app.route('/classify_color/<image_id>', methods=['POST'])
+def classify_color(image_id):
+    image = Image.query.filter_by(id=image_id).first()
     # color recognition logic
     file_path = sys.path[0] + 'uploads/' + image.filename
+    print("file_path: ", file_path, flush=True)
     colors = cd.get_colors(cd.get_image(file_path), 3, True)
     colors_array = []
     for count, value in enumerate(colors):
@@ -185,7 +186,7 @@ def classify_color(filename):
     return jsonify(image)
 
 
-@app.route('/ocr/<image_id>', methods=['POST'])
+@app.route('/ocr/<image_id>', methods=['GET'])
 def ocr(image_id):
     image = Image.query.filter_by(id=image_id).first()
     # color recognition logic
