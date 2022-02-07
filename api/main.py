@@ -166,8 +166,7 @@ def send_app_image(filename):
 def classify_color(image_id):
     image = Image.query.filter_by(id=image_id).first()
     # color recognition logic
-    file_path = sys.path[0] + 'uploads/' + image.filename
-    print("file_path: ", file_path, flush=True)
+    file_path = sys.path[0] + '/uploads/' + image.filename
     colors = cd.get_colors(cd.get_image(file_path), 3, True)
     colors_array = []
     for count, value in enumerate(colors):
@@ -190,7 +189,7 @@ def classify_color(image_id):
 def ocr(image_id):
     image = Image.query.filter_by(id=image_id).first()
     # color recognition logic
-    file_path = sys.path[0] + 'uploads/' + image.filename
+    file_path = sys.path[0] + '/uploads/' + image.filename
     ocr_result = pytesseract.image_to_string(Image.open(file_path))
 
     return jsonify(ocr_result)
