@@ -133,9 +133,9 @@ def upload():
 
         return "ok"
     except UnicodeDecodeError:
-        abort(404, Response('Invalid Access Token Format'))
+        abort(Response('Invalid Access Token Format', 400))
     except jwt.ExpiredSignatureError:
-        abort(404, Response('Signature Has Expired'))
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getImages', methods=['GET'])
