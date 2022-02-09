@@ -23,6 +23,8 @@ from imageai.Classification import ImageClassification
 import color_detection as cd
 # color names
 import color_name
+# ocr
+import pytesseract
 
 # load env variables
 load_dotenv()
@@ -132,9 +134,9 @@ def upload():
         db.session.commit()
 
         return "ok"
-    except jwt.UnicodeDecodeError:
+    except jwt.exceptions.DecodeError:
         abort(Response('Invalid Access Token Format', 400))
-    except jwt.ExpiredSignatureError:
+    except jwt.exceptions.ExpiredSignatureError:
         abort(Response('Signature Has Expired', 400))
 
 
