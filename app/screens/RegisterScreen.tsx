@@ -1,21 +1,21 @@
 import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { RootStackScreenProps } from '../types';
-import { useNavigation } from '@react-navigation/native';
-import { axiosInstance, ILoginRequest } from '../utils/auth';
+import { axiosInstance, ILoginRequest, IRegisterRequest } from '../utils/auth';
 import { getAccessToken, getRefreshToken, setAuthTokens } from 'react-native-axios-jwt';
 
 
-export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
+export default function RegisterScreen({ navigation }: RootStackScreenProps<'Register'>) {
     let [email, setEmail] = useState<string>('');
     let [password, setPassword] = useState<string>('');
+    let [username, setUsername] = useState<string>('');
+
 
     const baseURL = 'http://192.168.88.244:5000';
 
-    const login = async (params: ILoginRequest) => {
-        const response = await axiosInstance.post('/login', params)
+    const register = async (params: IRegisterRequest) => {
+        const response = await axiosInstance.post('/register', params)
 
-        // save tokens to storage
         await setAuthTokens({
             accessToken: response.data.data.access,
             refreshToken: response.data.data.refresh
@@ -26,6 +26,14 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>0r9an1zz3r</Text>
+            <View style={styles.inputView} >
+                <TextInput
+                    style={styles.inputText}
+                    placeholder="Username..."
+                    placeholderTextColor="#003f5c"
+                    autoCapitalize='none'
+                    onChangeText={text => setUsername(text)} />
+            </View>
             <View style={styles.inputView} >
                 <TextInput
                     style={styles.inputText}
@@ -42,17 +50,9 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
                     placeholderTextColor="#003f5c"
                     onChangeText={text => setPassword(text)} />
             </View>
-            {/* <TouchableOpacity>
-                <Text style={styles.forgot}>Forgot Password?</Text>
-            </TouchableOpacity> */}
-            <TouchableOpacity style={styles.loginBtn} onPress={() => login({ email, password })}>
-                <Text style={styles.loginText}>LOGIN</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+
+            <TouchableOpacity onPress={() => register({ username, email, password })}>
                 <Text style={styles.loginText}>Register</Text>
-            </TouchableOpacity>
-            <TouchableOpacity >
-                <Text style={styles.loginText}>Login With Google</Text>
             </TouchableOpacity>
 
 

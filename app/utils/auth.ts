@@ -24,8 +24,12 @@ export interface ILoginRequest {
     password: string;
 }
 
-const header = "Authorization";
-const headerPrefix = "Bearer";
+export interface IRegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
 // 3. Add interceptor to your axios instance
 applyAuthTokenInterceptor(axiosInstance, { 
     requestRefresh
