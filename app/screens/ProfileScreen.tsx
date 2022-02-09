@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { isLoggedIn, setAuthTokens, clearAuthTokens, getAccessToken, getRefreshToken } from 'react-native-axios-jwt'
@@ -51,6 +51,7 @@ export default function ProfileScreen() {
         fetchProfile();
     }, []);
 
+    console.log("loggedin: ", loggedIn)
 
     if (!loggedIn) {
         return <>
@@ -68,6 +69,9 @@ export default function ProfileScreen() {
                 <Text>logged in</Text>
                 <Text>{profile.email}</Text>
                 <Text>{profile.username}</Text>
+                <TouchableOpacity onPress={() => { clearAuthTokens(); setLoggedIn(false) }}>
+                    <Text>Logout</Text>
+                </TouchableOpacity>
             </View>
         </>
     }
