@@ -9,7 +9,6 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -22,6 +21,9 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
+import { useState } from 'react';
+import { isLoggedIn } from 'react-native-axios-jwt'
+
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -61,6 +63,11 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
+
+  if (loggedIn == undefined) {
+    isLoggedIn().then(setLoggedIn);
+  }
 
   return (
     <BottomTab.Navigator
@@ -68,49 +75,57 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
-      {/* {AsyncStorage.getItem('access') !== undefined ? (
-        <> */}
-      <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
-      />
-      <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      {/* </>
-      ) : ( */}
-      <BottomTab.Screen
-        name="TabThree"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      {/* )} */}
+      {loggedIn ? (
+        <>
+          <BottomTab.Screen
+            name="TabOne"
+            component={TabOneScreen}
+            options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
+              title: 'Home',
+              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+              headerRight: () => (
+                <Pressable
+                  onPress={() => navigation.navigate('Profile')}
+                  style={({ pressed }) => ({
+                    opacity: pressed ? 0.5 : 1,
+                  })}>
+                  <FontAwesome
+                    name="info-circle"
+                    size={25}
+                    color={Colors[colorScheme].text}
+                    style={{ marginRight: 15 }}
+                  />
+                </Pressable>
+              ),
+            })}
+          />
+          <BottomTab.Screen
+            name="TabTwo"
+            component={TabTwoScreen}
+            options={{
+              title: 'Search',
+              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            }}
+          />
+          <BottomTab.Screen
+            name="TabThree"
+            component={ProfileScreen}
+            options={{
+              title: 'Profile',
+              tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            }}
+          />
+        </>
+      ) : (
+        <BottomTab.Screen
+          name="TabThree"
+          component={ProfileScreen}
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          }}
+        />
+      )}
 
 
     </BottomTab.Navigator>

@@ -21,6 +21,7 @@ export type RootStackParamList = {
   ImageComponent: undefined;
   Login: undefined;
   Profile: undefined;
+  Register: undefined;
 };
 
 export type Props = NativeStackScreenProps<RootStackParamList, 'Image'>;
