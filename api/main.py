@@ -25,6 +25,7 @@ import color_detection as cd
 import color_name
 # ocr
 import pytesseract
+import PIL.Image
 
 # load env variables
 load_dotenv()
@@ -197,7 +198,7 @@ def ocr(image_id):
     image = Image.query.filter_by(id=image_id).first()
     # color recognition logic
     file_path = sys.path[0] + '/uploads/' + image.filename
-    ocr_result = pytesseract.image_to_string(Image.open(file_path))
+    ocr_result = pytesseract.image_to_string(PIL.Image.open(file_path))
 
     return jsonify(ocr_result)
 
