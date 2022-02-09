@@ -132,7 +132,7 @@ def upload():
         db.session.commit()
 
         return "ok"
-    except UnicodeDecodeError:
+    except jwt.UnicodeDecodeError:
         abort(Response('Invalid Access Token Format', 400))
     except jwt.ExpiredSignatureError:
         abort(Response('Signature Has Expired', 400))

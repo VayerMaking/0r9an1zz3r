@@ -38,3 +38,4 @@ tifffile==2021.11.2
 tomli==1.2.2
 webcolors==1.11.1
 Werkzeug==2.0.2
+pytesseract==0.3.8
