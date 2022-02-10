@@ -51,26 +51,29 @@ export default function ProfileScreen() {
         fetchProfile();
     }, []);
 
-    console.log("loggedin: ", loggedIn)
 
     if (!loggedIn) {
         return <>
-            <View>
+            <View style={styles.container}>
+                <Text style={styles.logo}>Profile</Text>
                 <Text> not logged in</Text>
-                <Button
-                    title="login"
+                <TouchableOpacity
+                    style={styles.button}
                     onPress={() => navigation.navigate('Login')}
-                />
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
             </View>
         </>
     } else {
         return <>
             <View style={styles.container}>
-                <Text>logged in</Text>
-                <Text>{profile.email}</Text>
-                <Text>{profile.username}</Text>
-                <TouchableOpacity onPress={() => { clearAuthTokens(); setLoggedIn(false) }}>
-                    <Text>Logout</Text>
+                <Text style={styles.logo}>Profile</Text>
+                <Text style={styles.profileText}>logged in as :</Text>
+                <Text style={styles.profileDataText}>{profile.email}</Text>
+                <Text style={styles.profileDataText}>{profile.username}</Text>
+                <TouchableOpacity style={styles.button} onPress={() => { clearAuthTokens(); setLoggedIn(false) }}>
+                    <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
             </View>
         </>
@@ -83,10 +86,38 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        marginTop: 8,
-        flexDirection: 'column',
-        flexWrap: 'wrap',
-        alignItems: 'center',   // if you want to fill rows left to right
-        justifyContent: "center",
+        backgroundColor: '#003f5c',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
+    logo: {
+        fontWeight: "bold",
+        fontSize: 50,
+        color: "#fb5b5a",
+        marginBottom: 40
+    },
+    button: {
+        width: "80%",
+        backgroundColor: "#fb5b5a",
+        borderRadius: 25,
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 40,
+        marginBottom: 10
+    },
+    buttonText: {
+        color: "white",
+        fontSize: 20,
+    },
+    profileDataText: {
+        color: "white",
+        fontSize: 15,
+    },
+    profileText: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 15,
+    }
 });
