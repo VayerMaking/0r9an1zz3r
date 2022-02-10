@@ -16,7 +16,6 @@ export default function ImageComponent() {
     const [refreshing, setRefreshing] = React.useState(false);
     const navigation = useNavigation();
     // let isInitialFetch: boolean = true;
-    const axiosInstance = useAxios();
 
     interface IImage {
         id: string,
@@ -29,32 +28,17 @@ export default function ImageComponent() {
         const url = baseURL + '/getImages';
         try {
             const response = await axiosInstance.get(url);
-            console.log(JSON.stringify(response));
             const json = await response.data;
-            console.log("images: ", images);
-            console.log("json: ", json);
-
 
             if (images.length === 0) {
                 setImages(images = json);
-                console.log("setting intial images");
                 return;
             }
-            //  const absent = images.filter(image => !json.includes(image));
             const absent = json.filter(({ id }) => !images.find(image => image.id == id));
-            console.log("absent: ", absent.length);
-            //console.log("images bf: ", images.slice(-1)[0]);
-            // if (isInitialFetch) {
-            //     setImages(json);
-            //     console.log('setting images')
-            //     isInitialFetch = false;
-            // } else {
+
             const newImages: any = [...absent, ...images];
             setImages(newImages);
-            // }
 
-            //console.log("images after: ", images.slice(-1)[0]);
-            console.log("images: ", images.length);
             return;
         } catch (err) {
             console.warn(err)
@@ -62,13 +46,10 @@ export default function ImageComponent() {
         }
 
     }
-    //const newImages = useMemo(() => fetchImages(), []);
-    // kolcho --> useMemo or useCalback
 
 
     useEffect(() => {
         fetchImages();
-        // console.log(images.length);
     }, []);
 
     const onRefresh = React.useCallback(() => {
@@ -94,7 +75,7 @@ export default function ImageComponent() {
                             <TouchableOpacity
                                 style={styles.item}
                                 key={keyId}
-                                onPress={() => navigation.navigate('Image', { filename: i.filename, baseURL: baseURL })}>
+                                onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseURL: baseURL })}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
 
                                 <Text>{i.tag}</Text>

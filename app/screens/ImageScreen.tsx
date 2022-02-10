@@ -10,22 +10,72 @@ import ImageComponent from '../components/ImageComponent';
 import { Text, View } from '../components/Themed';
 import { RootStackParamList, RootStackScreenProps, RootTabScreenProps } from '../types';
 import window from '../constants/Layout';
+import { useEffect, useState } from "react";
+import { axiosInstance } from "../utils/auth";
 
 export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'>) {
     const route = useRoute();
-    // const rp = Object.assign(route.params, Object);
-    // console.log(Object.values(rp)[0])
+
     const baseURL = route.params?.baseURL;
     const filename = route.params?.filename;
+    const imageId = route.params?.imageId;
     const URL = baseURL + '/image/' + filename;
+
+    interface IImageDetails {
+        colors: string[],
+        filename: string,
+        id: number,
+        tag: string,
+    }
+
+    let defaultImageDetails: IImageDetails = {
+        colors: [],
+        filename: '',
+        id: 0,
+        tag: ''
+    };
+
+    const [imageDetails, setImageDetails] = useState<IImageDetails>(defaultImageDetails);
+
+    async function fetchImageDetails() {
+        try {
+            const url = baseURL + '/getImageDetails/' + imageId;
+            const response = await axiosInstance.get(url);
+            const json = await response.data;
+            const fetchedImageDetails: IImageDetails = {
+                colors: json.colors,
+                filename: json.filename,
+                id: json.id,
+                tag: json.tag,
+            }
+            setImageDetails(fetchedImageDetails);
+        } catch (err) {
+            console.warn(err)
+
+        }
+    }
+
+    useEffect(() => {
+        fetchImageDetails();
+    }, []);
+
+    console.log("json colors: ", imageDetails.colors);
 
     return (
         <ScrollView>
             <View style={styles.container}>
                 <Image source={{ uri: URL }} style={styles.imageStyles} />
-                <Text style={styles.detailItem}>image data 1</Text>
-                <Text style={styles.detailItem}>image data 2</Text>
-                <Text style={styles.detailItem}>image data 3</Text>
+                <View style={styles.separatorLine} />
+                <Text style={styles.detailItem}>TAG:</Text>
+                <Text style={styles.detailItem}>{imageDetails.tag}</Text>
+                <Text style={styles.detailItem}>COLORS:</Text>
+
+                {imageDetails.colors.map(color => {
+                    return (
+                        <Text style={styles.detailItem}>{color}</Text>
+                    );
+                })}
+
             </View>
         </ScrollView>
     );
@@ -54,6 +104,11 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     detailItem: {
-        margin: 30,
+        margin: 5,
+    },
+    separatorLine: {
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        alignSelf: 'stretch',
     }
 });
