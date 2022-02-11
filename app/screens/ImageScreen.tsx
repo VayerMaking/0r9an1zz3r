@@ -12,6 +12,7 @@ import { RootStackParamList, RootStackScreenProps, RootTabScreenProps } from '..
 import window from '../constants/Layout';
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../utils/auth";
+import { baseApiURL } from "@env";
 
 export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'>) {
     const route = useRoute();
@@ -39,7 +40,7 @@ export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'
 
     async function fetchImageDetails() {
         try {
-            const url = baseURL + '/getImageDetails/' + imageId;
+            const url = baseApiURL + '/getImageDetails/' + imageId;
             const response = await axiosInstance.get(url);
             const json = await response.data;
             const fetchedImageDetails: IImageDetails = {

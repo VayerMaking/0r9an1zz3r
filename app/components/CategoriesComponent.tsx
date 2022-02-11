@@ -1,37 +1,19 @@
 import { View, Text, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import React, { useState, useEffect } from 'react';
 import { withSafeAreaInsets } from "react-native-safe-area-context";
+import { baseApiURL } from "@env";
 
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-const styles = StyleSheet.create({
-    highlight: {
-        fontWeight: '700',
-    },
-    container: {
-        flex: 1,
-        marginTop: 8,
-        flexDirection: 'column',
-        flexWrap: 'wrap',
-        alignItems: 'flex-start',   // if you want to fill rows left to right
-        justifyContent: "space-between"
-
-    },
-    category: {
-        margin: 10,
-    }
-});
-
 export default function ImageComponent() {
     const [categories, setCategories] = useState([]);
-    const baseURL = 'http://192.168.88.244:80';
     const [refreshing, setRefreshing] = React.useState(false);
 
     async function fetchCategories() {
-        const url = baseURL + '/getCategories';
+        const url = baseApiURL + '/getCategories';
         const response = await fetch(url);
         const json = await response.json();
         setCategories(json);
@@ -71,3 +53,21 @@ export default function ImageComponent() {
     </>
 
 }
+
+const styles = StyleSheet.create({
+    highlight: {
+        fontWeight: '700',
+    },
+    container: {
+        flex: 1,
+        marginTop: 8,
+        flexDirection: 'column',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start',   // if you want to fill rows left to right
+        justifyContent: "space-between"
+
+    },
+    category: {
+        margin: 10,
+    }
+});

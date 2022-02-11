@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { isLoggedIn, setAuthTokens, clearAuthTokens, getAccessToken, getRefreshToken } from 'react-native-axios-jwt'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { axiosInstance } from "../utils/auth";
+import { baseApiURL } from "@env";
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -22,8 +23,6 @@ export default function ProfileScreen() {
 
     const [profile, setProfile] = useState<IProfile>(defaultProfile);
     const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
-    const baseURL = 'http://192.168.88.244:80';
-    // const baseURL = 'http://18.191.82.215:80';
 
     const navigation = useNavigation();
 
@@ -33,7 +32,7 @@ export default function ProfileScreen() {
 
     async function fetchProfile() {
         try {
-            const url = baseURL + '/getUser';
+            const url = baseApiURL + '/getUser';
             const response = await axiosInstance.get(url);
             const json = await response.data;
             const fetchedProfile: IProfile = {

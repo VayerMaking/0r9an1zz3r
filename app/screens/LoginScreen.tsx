@@ -10,8 +10,6 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     let [email, setEmail] = useState<string>('');
     let [password, setPassword] = useState<string>('');
 
-    const baseURL = 'http://192.168.88.244:5000';
-
     const login = async (params: ILoginRequest) => {
         const response = await axiosInstance.post('/login', params)
 

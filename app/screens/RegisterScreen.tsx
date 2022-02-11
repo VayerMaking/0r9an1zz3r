@@ -10,9 +10,6 @@ export default function RegisterScreen({ navigation }: RootStackScreenProps<'Reg
     let [password, setPassword] = useState<string>('');
     let [username, setUsername] = useState<string>('');
 
-
-    const baseURL = 'http://192.168.88.244:5000';
-
     const register = async (params: IRegisterRequest) => {
         const response = await axiosInstance.post('/register', params)
 

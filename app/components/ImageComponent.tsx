@@ -2,8 +2,8 @@ import { View, Text, Image, StyleSheet, ScrollView, RefreshControl, TouchableOpa
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { axiosInstance } from "../utils/auth";
+import { baseApiURL } from "@env";
 // import useAxios from "../hooks/useAxios";
-
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -11,7 +11,7 @@ const wait = (timeout: number | undefined) => {
 
 export default function ImageComponent() {
     let [images, setImages] = useState([]);
-    const baseURL = 'http://192.168.88.244:80';
+    // const baseURL = 'http://192.168.88.244:80';
     // const baseURL = 'http://18.191.82.215:80';
     const [refreshing, setRefreshing] = React.useState(false);
     const navigation = useNavigation();
@@ -25,7 +25,7 @@ export default function ImageComponent() {
         colors: Array<string>
     }
     async function fetchImages() {
-        const url = baseURL + '/getImages';
+        const url = baseApiURL + '/getImages';
         try {
             const response = await axiosInstance.get(url);
             const json = await response.data;
