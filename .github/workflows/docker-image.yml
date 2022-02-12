@@ -17,6 +17,6 @@ jobs:
     - name: ls
       run: ls api
     - name: Build the Docker api image
-      run: docker build . --file api/Dockerfile --tag my-image-name:$(date +%s)
+      run: cd ./api && docker build --tag my-image-name:$(date +%s)
     - name: Build the Docker auth image
-      run: docker build . --file auth/Dockerfile --tag my-image-name:$(date +%s)
+      run: cd ./auth && docker build --tag my-image-name:$(date +%s)
