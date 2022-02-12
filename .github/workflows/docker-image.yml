@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: ls
+      run: ls
     - name: Build the Docker api image
       run: docker build . --file ./api/Dockerfile --tag my-image-name:$(date +%s)
     - name: Build the Docker auth image
