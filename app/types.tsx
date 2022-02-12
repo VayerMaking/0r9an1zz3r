@@ -17,11 +17,12 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
-  Image: { imageId: number, filename: string, baseURL: string };
+  Image: { imageId: number, filename: string, baseApiURL: string };
   ImageComponent: undefined;
   Login: undefined;
   Profile: undefined;
   Register: undefined;
+  Upload: undefined;
 };
 
 export type Props = NativeStackScreenProps<RootStackParamList, 'Image'>;
