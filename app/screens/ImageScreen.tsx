@@ -17,10 +17,10 @@ import { baseApiURL } from "@env";
 export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'>) {
     const route = useRoute();
 
-    const baseURL = route.params?.baseURL;
+    const baseApiURL = route.params?.baseApiURL;
     const filename = route.params?.filename;
     const imageId = route.params?.imageId;
-    const URL = baseURL + '/image/' + filename;
+    const URL = baseApiURL + '/image/' + filename;
 
     interface IImageDetails {
         colors: string[],
@@ -60,8 +60,6 @@ export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'
         fetchImageDetails();
     }, []);
 
-    console.log("json colors: ", imageDetails.colors);
-
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -72,8 +70,9 @@ export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'
                 <Text style={styles.detailItem}>COLORS:</Text>
 
                 {imageDetails.colors.map(color => {
+                    const keyId = imageDetails.colors.indexOf(color);
                     return (
-                        <Text style={styles.detailItem}>{color}</Text>
+                        <Text key={keyId} style={styles.detailItem}>{color}</Text>
                     );
                 })}
 
