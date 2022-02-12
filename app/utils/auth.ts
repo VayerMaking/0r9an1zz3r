@@ -1,6 +1,6 @@
 import { AuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor } from 'react-native-axios-jwt'
 import axios from 'axios'
-import {baseApiURL, baseAuthURL} from '@env'
+import {baseAuthURL} from '@env'
 
 
 // const BASE_URL = 'http://192.168.88.244:5000'

@@ -69,13 +69,13 @@ export default function ImageComponent() {
                 {images ? (
                     images.map(i => {
                         //@ts-ignore
-                        const URL = baseURL + '/image/' + i.filename;
+                        const URL = baseApiURL + '/image/' + i.filename;
                         const keyId = images.indexOf(i);
                         return (
                             <TouchableOpacity
                                 style={styles.item}
                                 key={keyId}
-                                onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseURL: baseURL })}>
+                                onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: baseApiURL })}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
 
                                 <Text>{i.tag}</Text>
