@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RootStackScreenProps } from '../types';
-import { baseApiURL } from '@env';
 import { getAccessToken } from 'react-native-axios-jwt';
+import { urls } from '../utils/auth';
 
 export default function UploadScreen({ navigation }: RootStackScreenProps<'Upload'>) {
 
@@ -21,7 +21,7 @@ export default function UploadScreen({ navigation }: RootStackScreenProps<'Uploa
                 type: imageType
             });
             await fetch(
-                baseApiURL + '/upload',
+                urls.baseApiURL + '/upload',
                 {
                     method: 'post',
                     body: data,

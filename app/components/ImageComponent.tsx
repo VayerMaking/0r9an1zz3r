@@ -2,8 +2,7 @@ import { View, Text, Image, StyleSheet, ScrollView, RefreshControl, TouchableOpa
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { axiosInstance } from "../utils/auth";
-import { baseApiURL } from "@env";
-// import useAxios from "../hooks/useAxios";
+import { urls } from "../utils/auth";
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -25,7 +24,7 @@ export default function ImageComponent() {
         colors: Array<string>
     }
     async function fetchImages() {
-        const url = baseApiURL + '/getImages';
+        const url = urls.baseApiURL + '/getImages';
         try {
             const response = await axiosInstance.get(url);
             const json = await response.data;
@@ -69,13 +68,13 @@ export default function ImageComponent() {
                 {images ? (
                     images.map(i => {
                         //@ts-ignore
-                        const URL = baseApiURL + '/image/' + i.filename;
+                        const URL = urls.baseApiURL + '/image/' + i.filename;
                         const keyId = images.indexOf(i);
                         return (
                             <TouchableOpacity
                                 style={styles.item}
                                 key={keyId}
-                                onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: baseApiURL })}>
+                                onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: urls.baseApiURL })}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
 
                                 <Text>{i.tag}</Text>

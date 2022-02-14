@@ -24,6 +24,7 @@ import LoginScreen from '../screens/LoginScreen';
 import { useState } from 'react';
 import { isLoggedIn } from 'react-native-axios-jwt'
 import UploadScreen from '../screens/UploadScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -49,6 +50,7 @@ function RootNavigator() {
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Screen name="Image" component={ImageScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Upload" component={UploadScreen} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
