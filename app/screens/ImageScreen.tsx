@@ -11,8 +11,8 @@ import { Text, View } from '../components/Themed';
 import { RootStackParamList, RootStackScreenProps, RootTabScreenProps } from '../types';
 import window from '../constants/Layout';
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../utils/auth";
-import { baseApiURL } from "@env";
+import { axiosInstance, urls } from "../utils/auth";
+
 
 export default function ImageScreen({ navigation }: RootStackScreenProps<'Image'>) {
     const route = useRoute();

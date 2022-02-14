@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { isLoggedIn, setAuthTokens, clearAuthTokens, getAccessToken, getRefreshToken } from 'react-native-axios-jwt'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { axiosInstance } from "../utils/auth";
-import { baseApiURL } from "@env";
+import { axiosInstance, urls } from "../utils/auth";
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -32,7 +31,7 @@ export default function ProfileScreen() {
 
     async function fetchProfile() {
         try {
-            const url = baseApiURL + '/getUser';
+            const url = urls.baseApiURL + '/getUser';
             const response = await axiosInstance.get(url);
             const json = await response.data;
             const fetchedProfile: IProfile = {
@@ -56,6 +55,8 @@ export default function ProfileScreen() {
             <View style={styles.container}>
                 <Text style={styles.logo}>Profile</Text>
                 <Text> not logged in</Text>
+                <Text>baseurl: {urls.baseApiURL}</Text>
+                <Text>baseurl: {urls.baseAuthURL}</Text>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => navigation.navigate('Login')}

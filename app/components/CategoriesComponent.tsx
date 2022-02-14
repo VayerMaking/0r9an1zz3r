@@ -1,8 +1,7 @@
 import { View, Text, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import React, { useState, useEffect } from 'react';
 import { withSafeAreaInsets } from "react-native-safe-area-context";
-import { baseApiURL } from "@env";
-
+import { urls } from "../utils/auth";
 
 const wait = (timeout: number | undefined) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -13,7 +12,7 @@ export default function ImageComponent() {
     const [refreshing, setRefreshing] = React.useState(false);
 
     async function fetchCategories() {
-        const url = baseApiURL + '/getCategories';
+        const url = urls.baseApiURL + '/getCategories';
         const response = await fetch(url);
         const json = await response.json();
         setCategories(json);
