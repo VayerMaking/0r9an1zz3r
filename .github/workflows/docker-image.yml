@@ -15,6 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker api image
-      run: docker build . --file api/Dockerfile --tag my-image-name:$(date +%s)
+      run: cd ./api && docker build . --tag 0r9an1zz3r_api:$(date +%s)
+    - name: Push the Docker api image
+      run: docker push vayer/0r9an1zz3r_api
     - name: Build the Docker auth image
-      run: docker build . --file auth/Dockerfile --tag my-image-name:$(date +%s)
+      run: cd ./auth && docker build . --tag 0r9anizz3r_auth:$(date +%s)
+    - name: Push the Docker auth image
+      run: docker push vayer/0r9an1zz3r_auth
