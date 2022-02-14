@@ -18,5 +18,9 @@ jobs:
       run: ls api
     - name: Build the Docker api image
       run: cd ./api && docker build . --tag my-image-name:$(date +%s)
+    - name: Push the Docker api image
+      run: docker push vayer/0r9an1zz3r_api
     - name: Build the Docker auth image
       run: cd ./auth && docker build . --tag my-image-name:$(date +%s)
+    - name: Push the Docker auth image
+      run: docker push vayer/0r9an1zz3r_auth
