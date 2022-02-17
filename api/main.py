@@ -133,14 +133,7 @@ def upload():
             if count >= 3:
                 break
 
-        colors_hex = cd.get_colors_hex(cd.get_image(file_path), 3)
-        colors_hex_array = []
-        for count, value in enumerate(colors_hex):
-            print(color_name.convert_rgb_to_names(value), flush=True)
-            colors_hex_array.append(
-                color_name.convert_rgb_to_names(value).split(": ")[1])
-            if count >= 3:
-                break
+        colors_hex_array = cd.get_colors_hex(cd.get_image(file_path), 3)
 
         color_percentages = cd.get_colors_percentages(
             cd.get_image(file_path), 3)
