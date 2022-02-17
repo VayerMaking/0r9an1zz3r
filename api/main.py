@@ -124,7 +124,7 @@ def upload():
 
         file_path = sys.path[0] + '/uploads/' + new_filename
 
-        colors_rgb = cd.get_colors_rgb(cd.get_image(file_path), 3, True)
+        colors_rgb = cd.get_colors_rgb(cd.get_image(file_path), 3)
         colors_rgb_array = []
         for count, value in enumerate(colors_rgb):
             print(color_name.convert_rgb_to_names(value), flush=True)
@@ -133,7 +133,7 @@ def upload():
             if count >= 3:
                 break
 
-        colors_hex = cd.get_colors_hex(cd.get_image(file_path), 3, True)
+        colors_hex = cd.get_colors_hex(cd.get_image(file_path), 3)
         colors_hex_array = []
         for count, value in enumerate(colors_hex):
             print(color_name.convert_rgb_to_names(value), flush=True)
