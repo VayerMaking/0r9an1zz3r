@@ -48,7 +48,7 @@ export default function RegisterScreen({ navigation }: RootStackScreenProps<'Reg
                     onChangeText={text => setPassword(text)} />
             </View>
 
-            <TouchableOpacity onPress={() => register({ username, email, password })}>
+            <TouchableOpacity onPress={() => { register({ username, email, password }); navigation.navigate('Login') }}>
                 <Text style={styles.loginText}>Register</Text>
             </TouchableOpacity>
 
