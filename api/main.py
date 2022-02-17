@@ -65,7 +65,7 @@ class Image(db.Model):
     is_classified: bool
     user_id: str
     colors: List[str]
-    color_percentages: List[str]
+    color_percentages: List[int]
     user_id: str
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,7 +74,7 @@ class Image(db.Model):
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
     color_percentages = db.Column(
-        postgresql.ARRAY(db.String(10), dimensions=1))
+        postgresql.ARRAY(db.Integer, dimensions=1))
     user_id = db.Column(db.Integer)
 
 
