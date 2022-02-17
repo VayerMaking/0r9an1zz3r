@@ -65,6 +65,7 @@ class Image(db.Model):
     is_classified: bool
     user_id: str
     colors: List[str]
+    color_percentages: List[str]
     user_id: str
 
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +73,8 @@ class Image(db.Model):
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
     colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
+    color_percentages = db.Column(
+        postgresql.ARRAY(db.String(10), dimensions=1))
     user_id = db.Column(db.Integer)
 
 
@@ -128,8 +131,10 @@ def upload():
             if count >= 3:
                 break
 
+        color_percentages = cd.get_colors_percentages(
+            cd.get_image(file_path), 3)
         image = Image(filename=new_filename,
-                      tag=predictions[0], user_id=id, is_classified=True, colors=colors_array)
+                      tag=predictions[0], user_id=id, is_classified=True, colors=colors_array, color_percentages=color_percentages)
 
         db.session.add(image)
         db.session.commit()

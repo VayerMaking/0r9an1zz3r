@@ -37,8 +37,26 @@ def get_colors(image, number_of_colors, show_chart):
     hex_colors = [RGB2HEX(ordered_colors[i]) for i in counts.keys()]
     rgb_colors = [ordered_colors[i] for i in counts.keys()]
 
-    if (show_chart):
-        plt.figure(figsize=(8, 6))
-        plt.pie(counts.values(), labels=hex_colors, colors=hex_colors)
+    # if (show_chart):
+    #     plt.figure(figsize=(8, 6))
+    #     plt.pie(counts.values(), labels=hex_colors, colors=hex_colors)
+    #     print(counts.values())
+    # plt.savefig('asdf.png')
 
     return rgb_colors
+
+
+def get_colors_percentages(image, number_of_colors):
+    modified_image = cv2.resize(
+        image, (600, 400), interpolation=cv2.INTER_AREA)
+    modified_image = modified_image.reshape(
+        modified_image.shape[0]*modified_image.shape[1], 3)
+
+    clf = KMeans(n_clusters=number_of_colors)
+    labels = clf.fit_predict(modified_image)
+
+    counts = Counter(labels)
+    # sort to ensure correct color percentage
+    counts = dict(sorted(counts.items()))
+
+    return counts.values()
