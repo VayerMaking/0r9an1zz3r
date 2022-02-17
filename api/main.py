@@ -64,7 +64,8 @@ class Image(db.Model):
     tag: str
     is_classified: bool
     user_id: str
-    colors: List[str]
+    colors_rgb: List[str]
+    colors_hex: List[str]
     color_percentages: List[int]
     user_id: str
 
@@ -72,7 +73,8 @@ class Image(db.Model):
     filename = db.Column(db.String(64))
     tag = db.Column(db.String(20))
     is_classified = db.Column(db.Boolean, default=False)
-    colors = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
+    colors_rgb = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
+    colors_hex = db.Column(postgresql.ARRAY(db.String(10), dimensions=1))
     color_percentages = db.Column(
         postgresql.ARRAY(db.Integer, dimensions=1))
     user_id = db.Column(db.Integer)
@@ -122,19 +124,31 @@ def upload():
 
         file_path = sys.path[0] + '/uploads/' + new_filename
 
-        colors = cd.get_colors(cd.get_image(file_path), 3, True)
-        colors_array = []
-        for count, value in enumerate(colors):
+        colors_rgb = cd.get_colors_rgb(cd.get_image(file_path), 3, True)
+        colors_rgb_array = []
+        for count, value in enumerate(colors_rgb):
             print(color_name.convert_rgb_to_names(value), flush=True)
-            colors_array.append(
+            colors_rgb_array.append(
+                color_name.convert_rgb_to_names(value).split(": ")[1])
+            if count >= 3:
+                break
+
+        colors_hex = cd.get_colors_hex(cd.get_image(file_path), 3, True)
+        colors_hex_array = []
+        for count, value in enumerate(colors_hex):
+            print(color_name.convert_rgb_to_names(value), flush=True)
+            colors_hex_array.append(
                 color_name.convert_rgb_to_names(value).split(": ")[1])
             if count >= 3:
                 break
 
         color_percentages = cd.get_colors_percentages(
             cd.get_image(file_path), 3)
+
         image = Image(filename=new_filename,
-                      tag=predictions[0], user_id=id, is_classified=True, colors=colors_array, color_percentages=color_percentages)
+                      tag=predictions[0], user_id=id, is_classified=True,
+                      colors_rgb=colors_rgb_array, colors_hex=colors_hex_array,
+                      color_percentages=color_percentages)
 
         db.session.add(image)
         db.session.commit()
