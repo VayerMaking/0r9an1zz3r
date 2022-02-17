@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Image, View, Platform } from 'react-native';
+import { Button, Image, View, Platform, Alert, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RootStackScreenProps } from '../types';
 import { getAccessToken } from 'react-native-axios-jwt';
@@ -12,7 +12,6 @@ export default function UploadScreen({ navigation }: RootStackScreenProps<'Uploa
 
     async function uploadImage() {
         if (image != null) {
-            // await ImagePicker.requestMediaLibraryPermissionsAsync();
             const data = new FormData();
             // data.append('image', image);
             data.append('image', {
@@ -31,17 +30,17 @@ export default function UploadScreen({ navigation }: RootStackScreenProps<'Uploa
                     },
                 }
             );
-
         }
     }
 
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
+
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
+            allowsEditing: false,
+            //aspect: [4, 3],
             quality: 1,
         });
 
@@ -57,7 +56,7 @@ export default function UploadScreen({ navigation }: RootStackScreenProps<'Uploa
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Button title="Choose Image" onPress={pickImage} />
             {image && <Image source={{ uri: image.uri }} style={{ width: 200, height: 200 }} />}
-            <Button title="Upload Image" onPress={uploadImage} />
+            <Button title="Upload Image" onPress={async () => { await uploadImage(); navigation.goBack() }} />
         </View>
     );
 }
