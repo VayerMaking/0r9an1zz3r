@@ -232,6 +232,7 @@ def getImageDetails(image_id):
 def deleteImage():
     image_id = request.json['image_id']
     Image.query.filter_by(user_id=get_user_id(request), id=image_id).delete()
+    db.session.commit()
     return jsonify("ok")
 
 
@@ -240,7 +241,7 @@ def editTag():
     image_id = request.json['image_id']
     image = Image.query.filter_by(
         user_id=get_user_id(request), id=image_id).first()
-    image.tag = request.form['new_tag']
+    image.tag = request.json['new_tag']
     db.session.commit()
     return jsonify(image)
 
