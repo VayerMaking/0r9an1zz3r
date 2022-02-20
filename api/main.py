@@ -230,14 +230,14 @@ def getImageDetails(image_id):
 
 @app.route('/deleteImage', methods=['POST'])
 def deleteImage():
-    image_id = request.form['image_id']
+    image_id = request.json['image_id']
     Image.query.filter_by(user_id=get_user_id(request), id=image_id).delete()
     return jsonify("ok")
 
 
 @app.route('/editTag', methods=['PUT'])
 def editTag():
-    image_id = request.form['image_id']
+    image_id = request.json['image_id']
     image = Image.query.filter_by(
         user_id=get_user_id(request), id=image_id).first()
     image.tag = request.form['new_tag']
