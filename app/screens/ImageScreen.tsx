@@ -4,7 +4,7 @@ import {
     useRoute,
 } from "@react-navigation/native";
 import * as React from 'react';
-import { StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView, Image, Dimensions, TouchableOpacity, Pressable, RefreshControl } from 'react-native';
 
 import ImageComponent from '../components/ImageComponent';
 import { Text, View } from '../components/Themed';
@@ -13,6 +13,11 @@ import window from '../constants/Layout';
 import { useEffect, useState } from "react";
 import { axiosInstance, urls } from "../utils/auth";
 import { PieChart } from "react-native-chart-kit";
+import { FontAwesome } from "@expo/vector-icons";
+
+const wait = (timeout: number | undefined) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 export default function ImageScreen({
     navigation,
@@ -31,6 +36,8 @@ export default function ImageScreen({
         legendFontColor: string,
         legendFontSize: number
     }[]>([]);
+    const [refreshing, setRefreshing] = React.useState(false);
+
 
     interface IImageDetails {
         colors_rgb: string[];
@@ -52,6 +59,25 @@ export default function ImageScreen({
 
     const [imageDetails, setImageDetails] =
         useState<IImageDetails>(defaultImageDetails);
+
+    navigation.setOptions({
+        headerRight: () =>
+            <Pressable
+                // onPress={() => navigation.navigate('EditImage')}
+                onPress={() => navigation.navigate('EditImage', { imageId: imageId, tag: imageDetails.tag })}
+
+                style={({ pressed }) => ({
+                    opacity: pressed ? 0.5 : 1,
+                })}>
+                <FontAwesome
+                    name="info-circle"
+                    size={25}
+                    color="black"
+                    style={{ marginRight: 15 }}
+                />
+            </Pressable>
+        ,
+    });
 
     function setData(imgDetails: IImageDetails) {
         let temp = [...dataState];
@@ -92,6 +118,11 @@ export default function ImageScreen({
             console.warn(err);
         }
     }
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchImageDetails();
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
 
     useEffect(() => {
         fetchImageDetails();
@@ -115,7 +146,13 @@ export default function ImageScreen({
     };
 
     return (
-        <ScrollView>
+        <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }>
             <View style={styles.container}>
                 <Image source={{ uri: URL }} style={styles.imageStyles} />
                 <View style={styles.separatorLine} />
@@ -123,14 +160,16 @@ export default function ImageScreen({
                 <Text style={styles.detailItem}>{imageDetails.tag}</Text>
                 <Text style={styles.detailItem}>COLORS:</Text>
 
-                {imageDetails.colors_rgb.map((color) => {
-                    const keyId = imageDetails.colors_rgb.indexOf(color);
-                    return (
-                        <Text key={keyId} style={styles.detailItem}>
-                            {color}
-                        </Text>
-                    );
-                })}
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                    {imageDetails.colors_hex.map((color) => {
+                        const keyId = imageDetails.colors_hex.indexOf(color);
+                        return (
+                            <Text key={keyId} style={styles.detailItem}>
+                                {color}
+                            </Text>
+                        );
+                    })}
+                </View>
 
                 {dataState && (
                     <PieChart
@@ -145,7 +184,6 @@ export default function ImageScreen({
                     // absolute
                     />
                 )}
-                <Text>bobec</Text>
             </View>
         </ScrollView>
     );
