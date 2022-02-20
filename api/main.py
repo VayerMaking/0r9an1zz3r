@@ -228,16 +228,31 @@ def getImageDetails(image_id):
     return jsonify(image)
 
 
+@app.route('/deleteImage', methods=['DELETE'])
+def deleteImage():
+    image_id = request.form('image_id')
+    Image.query.filter_by(user_id=get_user_id(request), id=image_id).delete()
+    return jsonify("ok")
+
+
+@app.route('/editTag', methods=['PUT'])
+def editTag():
+    image_id = request.form('image_id')
+    image = Image.query.filter_by(
+        user_id=get_user_id(request), id=image_id).first()
+    image.tag = request.form('new_tag')
+    db.session.commit()
+    return jsonify(image)
+
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
 
 def get_user_id(req):
     encoded_jwt = req.headers['Authorization'].split(' ')[1]
-    print("encoded_jwt: ", encoded_jwt, flush=True)
     decoded_jwt = json.dumps(jwt.decode(encoded_jwt, os.getenv(
         'JWT_SECRET'), algorithms=["HS256"]))
-    print("decoded_jwt: ", decoded_jwt, flush=True)
     decoded_id = json.loads(decoded_jwt)["sub"]
     return str(decoded_id)
 
@@ -246,6 +261,5 @@ if __name__ == "__main__":
     """
     This is the main entry point for the program
     """
-    print("we are here")
     db.create_all()
     app.run(host="0.0.0.0", port=80)
