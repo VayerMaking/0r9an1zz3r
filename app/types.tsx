@@ -23,6 +23,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Register: undefined;
   Upload: undefined;
+  EditImage: { imageId: number, tag: string };
 };
 
 export type Props = NativeStackScreenProps<RootStackParamList, 'Image'>;
