@@ -39,3 +39,4 @@ tomli==1.2.2
 webcolors==1.11.1
 Werkzeug==2.0.2
 pytesseract==0.3.8
+pyOpenSSL==22.0.0

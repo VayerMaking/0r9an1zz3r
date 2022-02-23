@@ -263,4 +263,4 @@ if __name__ == "__main__":
     This is the main entry point for the program
     """
     db.create_all()
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=80, ssl_context='adhoc')
