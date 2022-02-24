@@ -244,6 +244,15 @@ def editTag():
     image.tag = request.json['new_tag']
     db.session.commit()
     return jsonify(image)
+# ["#4b4723","#e1e7f3","#857e6a"]
+
+
+@app.route('/getByHex', methods=['GET'])
+def getByHex():
+    wanted_hex = request.json['hex_val']
+    images = Image.query.filter(Image.user_id == get_user_id(
+        request), Image.colors_hex.any(wanted_hex)).all()
+    return jsonify(images)
 
 
 def random_string(length):
@@ -263,4 +272,4 @@ if __name__ == "__main__":
     This is the main entry point for the program
     """
     db.create_all()
-    app.run(host="0.0.0.0", port=80, ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=80)  # , ssl_context='adhoc')
