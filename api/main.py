@@ -249,7 +249,7 @@ def editTag():
 
 @app.route('/getByHex', methods=['GET'])
 def getByHex():
-    wanted_hex = request.json['hex_val']
+    wanted_hex = request.args.get('hex_val')
     images = Image.query.filter(Image.user_id == get_user_id(
         request), Image.colors_hex.any(wanted_hex)).all()
     return jsonify(images)
