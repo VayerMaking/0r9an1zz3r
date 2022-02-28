@@ -291,7 +291,7 @@ def getByColorName():
 def getByTag():
     wanted_tag = request.args.get('tag')
     images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.colors_hex.any(wanted_tag)).all()
+        request), Image.tag.any(wanted_tag)).all()
     return jsonify(images)
 
 
