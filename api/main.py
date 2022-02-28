@@ -272,7 +272,7 @@ def getColorNames():
         request)).order_by(desc(Image.id)).with_entities(Image.colors_rgb).all()
     color_names = []
     for image in images:
-        for color_name in image.color_rgb:
+        for color_name in image.colors_rgb:
             color_names.append(color_name)
     return jsonify(color_names)
 
