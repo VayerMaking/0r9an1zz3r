@@ -273,7 +273,8 @@ def getColorNames():
     color_names = []
     for image in images:
         for color_name in image.colors_rgb:
-            color_names.append(color_name)
+            if color_name not in color_names:
+                color_names.append(color_name)
     return jsonify(color_names)
 
 
