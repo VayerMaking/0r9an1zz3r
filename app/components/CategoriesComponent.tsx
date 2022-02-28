@@ -42,6 +42,7 @@ export default function ImageComponent() {
     // }, []);
 
     function onChangeText(text: React.SetStateAction<string>, dropdownValue: string | null) {
+        setTagsVisability(true);
         setText(text);
         searchDataOnChange(text, dropdownValue);
 
@@ -73,6 +74,8 @@ export default function ImageComponent() {
             return filteredData;
 
         } else if (searchType == 'by_color_name') {
+            console.log("by clor name");
+            console.log(searchValue);
             if (searchValue == undefined) {
                 return setFilteredData(colorNames);
             }
@@ -85,7 +88,10 @@ export default function ImageComponent() {
             return filteredData;
 
         } else if (searchType == 'by_color_hex') {
+            console.log("by hex");
+            console.log(searchValue);
             console.log("colors: ", colors);
+
 
             if (searchValue == undefined) {
                 return setFilteredData(colors);
@@ -94,13 +100,14 @@ export default function ImageComponent() {
 
                 return item.toLowerCase().includes(searchValue.toLowerCase());
             });
+            console.log("colors filtered: ", filteredData);
+
             setFilteredData(filteredData);
 
             return filteredData;
 
-        } else if (searchType == 'color_picker') {
-            console.log("color picker");
-            return getByHex(searchValue);
+        } else {
+            return "bla"
         }
 
     }
@@ -164,7 +171,7 @@ export default function ImageComponent() {
     }
 
     async function fetchColors() {
-        const url = urls.baseApiURL + '/getAllColors';
+        const url = urls.baseApiURL + '/getHexValues';
         const response = await axiosInstance.get(url);
         const json = await response.data;
         setColors(json);
@@ -215,11 +222,12 @@ export default function ImageComponent() {
                         setDropdownValue(item.value);
                         if (item.value == 'color_picker') {
                             setColorPickerVisability(true);
+                            setTagsVisability(false);
                         } else if (item.value == 'by_tag') {
                             setTagsVisability(true);
                         } else {
                             setColorPickerVisability(false);
-                            setTagsVisability(false);
+                            setTagsVisability(true);
                         }
                         setIsFocus(false);
                     }}
@@ -273,20 +281,20 @@ export default function ImageComponent() {
             <ScrollView>
                 <View style={styles.container}>
                     {filteredData ? (
-                        filteredData.map(tag => {
-                            const keyId = tags.indexOf(tag);
+                        filteredData.map(item => {
+                            const keyId = filteredData.indexOf(item);
                             return (
                                 <TouchableOpacity
                                     key={keyId}
                                     style={styles.tag}
-                                    onPress={() => console.log("show all images with tag ", tag)}
+                                    onPress={() => { searchDataOnPress(item, dropdownValue); setTagsVisability(false) }}
                                 >
-                                    <Text>{tag}</Text>
+                                    <Text>{item}</Text>
                                 </TouchableOpacity>
                             );
                         })
                     ) : (
-                        <Text style={styles.highlight}>No images found</Text>
+                        <Text style={styles.highlight}>No tags found</Text>
                     )}
                 </View>
             </ScrollView>
