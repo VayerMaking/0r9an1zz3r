@@ -21,27 +21,31 @@ const wait = (timeout: number | undefined) => {
 
 export default function ImageComponent() {
     const [tags, setTags] = useState([]);
+    const [tagsVisability, setTagsVisability] = useState<boolean>(false);
+    const [images, setImages] = useState([]);
+    const [imagesVisability, setImagesVisability] = useState<boolean>(false);
+    const [colorNames, setColorNames] = useState([]);
+    const [colors, setColors] = useState([]);
+
     // const [filteredTags, setFilteredTags] = useState([...tags]);
     const [filteredData, setFilteredData] = useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
     const [dropdownValue, setDropdownValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
-    const [images, setImages] = useState([]);
 
     const [colorPickerVisability, setColorPickerVisability] = useState<boolean>(false);
-    const [tagsVisability, setTagsVisability] = useState<boolean>(false);
-    const [imagesVisability, setImagesVisability] = useState<boolean>(false);
-    const [colors, setColors] = useState([]);
     const [text, setText] = useState('');
 
-    const onChangeText = useCallback((value) => {
-        setText(value);
-        // if (dropdownValue == 'by_tag') {
-        //     console.log("asddffdf");
+    // const onChangeText = useCallback((value) => {
+    //     setText(value);
+    //     searchDataOnChange(text, dropdownValue);  
+    // }, []);
 
-        //     searchData(text, dropdownValue);
-        // }
-    }, []);
+    function onChangeText(text: React.SetStateAction<string>, dropdownValue: string | null) {
+        setText(text);
+        searchDataOnChange(text, dropdownValue);
+
+    }
 
     const [selectedColor, setSelectedColor] = useState("");
 
@@ -52,17 +56,16 @@ export default function ImageComponent() {
         setText(color);
     }
 
-    async function searchData(searchValue: any, searchType: string | null) {
+    async function searchDataOnChange(searchValue: any, searchType: string | null) {
         if (searchType == 'by_tag') {
             console.log("by tag");
             console.log(searchValue);
-
+            //console.log("tags: ", await fetchTags())
 
             if (searchValue == undefined) {
                 return setFilteredData(tags);
             }
             const filteredData = tags.filter((item: string) => {
-
                 return item.toLowerCase().includes(searchValue.toLowerCase());
             });
             setFilteredData(filteredData);
@@ -70,19 +73,50 @@ export default function ImageComponent() {
             return filteredData;
 
         } else if (searchType == 'by_color_name') {
-            // get filtered array from backend
-            const images_with_searched_hex = await getByHex(searchValue);
+            if (searchValue == undefined) {
+                return setFilteredData(colorNames);
+            }
+            const filteredData = colorNames.filter((item: string) => {
 
-            console.log("images hex ", images_with_searched_hex);
+                return item.toLowerCase().includes(searchValue.toLowerCase());
+            });
+            setFilteredData(filteredData);
 
-            //setFilteredData(filteredData);
+            return filteredData;
+
         } else if (searchType == 'by_color_hex') {
-            console.log("by hex");
-            setImagesVisability(true);
+            console.log("colors: ", colors);
+
+            if (searchValue == undefined) {
+                return setFilteredData(colors);
+            }
+            const filteredData = colors.filter((item: string) => {
+
+                return item.toLowerCase().includes(searchValue.toLowerCase());
+            });
+            setFilteredData(filteredData);
+
+            return filteredData;
+
+        } else if (searchType == 'color_picker') {
+            console.log("color picker");
+            return getByHex(searchValue);
+        }
+
+    }
+
+    async function searchDataOnPress(searchValue: any, searchType: string | null) {
+        setImagesVisability(true);
+
+        if (searchType == 'by_tag') {
+            return getByTag(searchValue);
+        } else if (searchType == 'by_color_name') {
+            return getByColorName(searchValue);
+        } else if (searchType == 'by_color_hex') {
+            // setImagesVisability(true);
             return getByHex(searchValue);
         } else if (searchType == 'color_picker') {
-            setImagesVisability(true);
-            console.log("color picker");
+            // setImagesVisability(true);
             return getByHex(searchValue);
         }
 
@@ -94,17 +128,39 @@ export default function ImageComponent() {
         const response = await axiosInstance.get(url, { params: { hex_val: searchValue } });
         const json = await response.data;
         setColorPickerVisability(false)
-        console.log(images);
-
         setImages(json);
-        console.log(images);
 
     }
+
+    async function getByColorName(searchValue: string) {
+        const url = urls.baseApiURL + '/getByColorName';
+        console.log(searchValue);
+        const response = await axiosInstance.get(url, { params: { color_name: searchValue.toLowerCase() } });
+        const json = await response.data;
+        setColorPickerVisability(false)
+        setImages(json);
+    }
+
+    async function getByTag(searchValue: string) {
+        const url = urls.baseApiURL + '/getByTag';
+        const response = await axiosInstance.get(url, { params: { tag: searchValue } });
+        const json = await response.data;
+        setColorPickerVisability(false)
+        setImages(json);
+    }
+
     async function fetchTags() {
         const url = urls.baseApiURL + '/getCategories';
         const response = await axiosInstance.get(url);
         const json = await response.data;
         setTags(json);
+    }
+
+    async function fetchColorNames() {
+        const url = urls.baseApiURL + '/getColorNames';
+        const response = await axiosInstance.get(url);
+        const json = await response.data;
+        setColorNames(json);
     }
 
     async function fetchColors() {
@@ -117,6 +173,7 @@ export default function ImageComponent() {
     useEffect(() => {
         fetchTags();
         fetchColors();
+        fetchColorNames();
     }, []);
 
     const onRefresh = React.useCallback(() => {
@@ -125,7 +182,6 @@ export default function ImageComponent() {
         wait(2000).then(() => setRefreshing(false));
     }, []);
 
-
     return <>
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -133,9 +189,9 @@ export default function ImageComponent() {
                 <SearchBar
                     placeholder="Search"
                     //onPress={() => alert("onPress")}
-                    onChangeText={onChangeText}
-                    onClearPress={() => setText('')}
-                    onSearchPress={() => searchData(text, dropdownValue)}
+                    onChangeText={(text) => onChangeText(text, dropdownValue)}
+                    onClearPress={() => { setText(''); setImagesVisability(false) }}
+                    onSearchPress={() => searchDataOnPress(text, dropdownValue)}
                     style={{
                         width: Dimensions.get("screen").width * .60
                     }}
@@ -233,7 +289,8 @@ export default function ImageComponent() {
                         <Text style={styles.highlight}>No images found</Text>
                     )}
                 </View>
-            </ScrollView>}
+            </ScrollView>
+        }
 
     </>
 
