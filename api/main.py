@@ -61,7 +61,7 @@ prediction.loadModel()
 class Image(db.Model):
     id: int
     filename: str
-    tag: List[str]
+    tags: List[str]
     is_classified: bool
     user_id: str
     colors_rgb: List[str]
@@ -71,7 +71,7 @@ class Image(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
-    tag = db.Column(postgresql.ARRAY(db.String(15), dimensions=1))
+    tags = db.Column(postgresql.ARRAY(db.String(15), dimensions=1))
     is_classified = db.Column(db.Boolean, default=False)
     colors_rgb = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
     colors_hex = db.Column(postgresql.ARRAY(db.String(10), dimensions=1))
@@ -160,14 +160,15 @@ def getImages():
     return jsonify(images)
 
 
-@app.route('/getCategories', methods=['GET'])
-def getCategories():
-    # categories = Image.query.limit(15).all()
+@app.route('/getTags', methods=['GET'])
+def getTags():
     images = Image.query.filter_by(user_id=get_user_id(
-        request)).distinct(Image.tag).limit(15).all()
+        request)).order_by(desc(Image.id)).with_entities(Image.tags).all()
     tags = []
     for image in images:
-        tags.append(image.tag)
+        for tag in image.tags:
+            if tag not in tags:
+                tags.append(tag)
     return jsonify(tags)
 
 

@@ -157,7 +157,7 @@ export default function ImageComponent() {
     }
 
     async function fetchTags() {
-        const url = urls.baseApiURL + '/getCategories';
+        const url = urls.baseApiURL + '/getTags';
         const response = await axiosInstance.get(url);
         const json = await response.data;
         setTags(json);
