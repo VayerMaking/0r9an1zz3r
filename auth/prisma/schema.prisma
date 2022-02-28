@@ -19,7 +19,7 @@ model user {
 model image {
   id Int @id @default(autoincrement())
   filename String
-  tag String
+  tag String[]
   is_classified Boolean
   colors_rgb String[]
   colors_hex String[]

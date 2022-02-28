@@ -61,7 +61,7 @@ prediction.loadModel()
 class Image(db.Model):
     id: int
     filename: str
-    tag: str
+    tag: List[str]
     is_classified: bool
     user_id: str
     colors_rgb: List[str]
@@ -71,7 +71,7 @@ class Image(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
-    tag = db.Column(db.String(20))
+    tag = db.Column(postgresql.ARRAY(db.String(15), dimensions=1))
     is_classified = db.Column(db.Boolean, default=False)
     colors_rgb = db.Column(postgresql.ARRAY(db.String(20), dimensions=1))
     colors_hex = db.Column(postgresql.ARRAY(db.String(10), dimensions=1))
@@ -120,7 +120,7 @@ def upload():
         imagefile.save(os.path.join("uploads", new_filename))
 
         predictions, probabilities = prediction.classifyImage(
-            os.path.join(execution_path, "uploads/" + new_filename), result_count=1)
+            os.path.join(execution_path, "uploads/" + new_filename), result_count=3)
 
         file_path = sys.path[0] + '/uploads/' + new_filename
 
@@ -139,7 +139,7 @@ def upload():
             cd.get_image(file_path), 3)
 
         image = Image(filename=new_filename,
-                      tag=predictions[0], user_id=id, is_classified=True,
+                      tag=predictions, user_id=id, is_classified=True,
                       colors_rgb=colors_rgb_array, colors_hex=colors_hex_array,
                       color_percentages=color_percentages)
 
