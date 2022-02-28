@@ -285,6 +285,14 @@ def getByColorName():
     return jsonify(images)
 
 
+@app.route('/getByTag', methods=['GET'])
+def getByTag():
+    wanted_tag = request.args.get('tag')
+    images = Image.query.filter(Image.user_id == get_user_id(
+        request), Image.colors_hex.any(wanted_tag)).all()
+    return jsonify(images)
+
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
