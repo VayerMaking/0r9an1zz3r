@@ -277,6 +277,14 @@ def getColorNames():
     return jsonify(color_names)
 
 
+@app.route('/getByColorName', methods=['GET'])
+def getByColorName():
+    wanted_color_name = request.args.get('color_name')
+    images = Image.query.filter(Image.user_id == get_user_id(
+        request), Image.colors_rgb.any(wanted_color_name)).all()
+    return jsonify(images)
+
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
