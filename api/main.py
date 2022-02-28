@@ -255,14 +255,15 @@ def getByHex():
     return jsonify(images)
 
 
-@app.route('/getAllColors', methods=['GET'])
-def getAllColors():
+@app.route('/getHexValues', methods=['GET'])
+def getHexValues():
     images = Image.query.filter_by(user_id=get_user_id(
         request)).order_by(desc(Image.id)).with_entities(Image.colors_hex).all()
     colors = []
     for image in images:
         for color in image.colors_hex:
-            colors.append(color)
+            if color not in colors:
+                colors.append(color)
     return jsonify(colors)
 
 
