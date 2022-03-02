@@ -68,6 +68,7 @@ class Image(db.Model):
     colors_hex: List[str]
     color_percentages: List[int]
     user_id: str
+    image_text: str
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
@@ -78,6 +79,7 @@ class Image(db.Model):
     color_percentages = db.Column(
         postgresql.ARRAY(db.Integer, dimensions=1))
     user_id = db.Column(db.Integer)
+    image_text = db.Column(db.String(150))
 
 
 @dataclass
@@ -113,17 +115,22 @@ class User(db.Model):
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
+        # auth user
         id = get_user_id(request)
+
+        # save file
         imagefile = request.files['image']
         filename = werkzeug.utils.secure_filename(imagefile.filename)
         new_filename = random_string(64)
         imagefile.save(os.path.join("uploads", new_filename))
 
+        # run classification
         predictions, probabilities = prediction.classifyImage(
             os.path.join(execution_path, "uploads/" + new_filename), result_count=3)
 
         file_path = sys.path[0] + '/uploads/' + new_filename
 
+        # get color names
         colors_rgb = cd.get_colors_rgb(cd.get_image(file_path), 3)
         colors_rgb_array = []
         for count, value in enumerate(colors_rgb):
@@ -132,16 +139,20 @@ def upload():
                 color_name.convert_rgb_to_names(value).split(": ")[1])
             if count >= 3:
                 break
-
+        # get hex color values
         colors_hex_array = cd.get_colors_hex(cd.get_image(file_path), 3)
 
+        # get percentages
         color_percentages = cd.get_colors_percentages(
             cd.get_image(file_path), 3)
+
+        # run ocr on the image
+        ocr_result = pytesseract.image_to_string(PIL.Image.open(file_path))
 
         image = Image(filename=new_filename,
                       tag=predictions, user_id=id, is_classified=True,
                       colors_rgb=colors_rgb_array, colors_hex=colors_hex_array,
-                      color_percentages=color_percentages)
+                      color_percentages=color_percentages, image_text=ocr_result)
 
         db.session.add(image)
         db.session.commit()

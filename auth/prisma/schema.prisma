@@ -25,4 +25,5 @@ model image {
   colors_hex String[]
   color_percentages Int[]
   user_id String
+  image_text String
 }
