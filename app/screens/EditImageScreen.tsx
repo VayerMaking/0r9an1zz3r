@@ -8,14 +8,13 @@ export default function EditImageScreen({
     navigation,
 }: RootStackScreenProps<"EditImage">) {
     const route = useRoute();
-    const tag = route.params?.tag;
     const imageId = route.params?.imageId;
-    const [text, onChangeText] = React.useState<string>(tag);
+    const [tags, setTags] = React.useState<string[]>(route.params?.tags);
 
     async function editTag() {
-        const url = urls.baseApiURL + '/editTag';
-        const response = await axiosInstance.put(url, { image_id: imageId, new_tag: text });
-        await onChangeText(text);
+        const url = urls.baseApiURL + '/editTags';
+        const response = await axiosInstance.put(url, { image_id: imageId, new_tags: tags });
+        await setTags(tags);
         navigation.goBack();
     }
 
@@ -25,13 +24,25 @@ export default function EditImageScreen({
         navigation.goBack();
     }
 
+    function handleEdit(editedTags: string) {
+        console.log(editedTags);
+        const newTags = [];
+        for (let i = 0; i <= 2; i++) {
+            newTags[i] = editedTags.split('/')[i]
+        }
+        console.log(newTags);
+
+        setTags(newTags)
+    }
+
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
-                onChangeText={onChangeText}
-                value={text}
+                onChangeText={handleEdit}
+                value={tags[0] + "/" + tags[1] + "/" + tags[2]}
             />
+
             <TouchableOpacity
                 style={styles.editBtn}
                 onPress={() => editTag()

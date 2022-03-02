@@ -237,12 +237,12 @@ def deleteImage():
     return jsonify("ok")
 
 
-@app.route('/editTag', methods=['PUT'])
+@app.route('/editTags', methods=['PUT'])
 def editTag():
     image_id = request.json['image_id']
     image = Image.query.filter_by(
         user_id=get_user_id(request), id=image_id).first()
-    image.tag = request.json['new_tag']
+    image.tags = request.json['new_tags']
     db.session.commit()
     return jsonify(image)
 # ["#4b4723","#e1e7f3","#857e6a"]
