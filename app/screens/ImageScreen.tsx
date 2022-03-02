@@ -45,7 +45,7 @@ export default function ImageScreen({
         color_percentages: number[];
         filename: string;
         id: number;
-        tag: string;
+        tags: string[];
     }
 
     let defaultImageDetails: IImageDetails = {
@@ -54,7 +54,7 @@ export default function ImageScreen({
         color_percentages: [],
         filename: "",
         id: 0,
-        tag: "",
+        tags: [],
     };
 
     const [imageDetails, setImageDetails] =
@@ -64,7 +64,7 @@ export default function ImageScreen({
         headerRight: () =>
             <Pressable
                 // onPress={() => navigation.navigate('EditImage')}
-                onPress={() => navigation.navigate('EditImage', { imageId: imageId, tag: imageDetails.tag })}
+                onPress={() => navigation.navigate('EditImage', { imageId: imageId, tags: imageDetails.tags })}
 
                 style={({ pressed }) => ({
                     opacity: pressed ? 0.5 : 1,
@@ -85,7 +85,6 @@ export default function ImageScreen({
             return a + b;
         }, 0);
         for (let i = 0; i < 3; i++) {
-            //console.log(Number((100 * imgDetails.color_percentages[i] / sum).toPrecision(3)));
             temp.push({
                 name: imgDetails.colors_rgb[i],
                 color: imgDetails.colors_hex[i],
@@ -107,7 +106,7 @@ export default function ImageScreen({
                 colors_hex: json.colors_hex,
                 filename: json.filename,
                 id: json.id,
-                tag: json.tag,
+                tags: json.tags,
                 color_percentages: json.color_percentages,
             };
             setData(fetchedImageDetails);
@@ -156,11 +155,20 @@ export default function ImageScreen({
             <View style={styles.container}>
                 <Image source={{ uri: URL }} style={styles.imageStyles} />
                 <View style={styles.separatorLine} />
-                <Text style={styles.detailItem}>TAG:</Text>
-                <Text style={styles.detailItem}>{imageDetails.tag}</Text>
+                <Text style={styles.detailItem}>TAGS:</Text>
+                <View style={styles.roundContainer}>
+                    {imageDetails.tags.map((tag) => {
+                        const keyId = imageDetails.tags.indexOf(tag);
+                        return (
+                            <Text key={keyId} style={styles.detailItem}>
+                                {tag}
+                            </Text>
+                        );
+                    })}
+                </View>
                 <Text style={styles.detailItem}>COLORS:</Text>
 
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                <View style={styles.roundContainer}>
                     {imageDetails.colors_hex.map((color) => {
                         const keyId = imageDetails.colors_hex.indexOf(color);
                         return (
@@ -218,5 +226,12 @@ const styles = StyleSheet.create({
         borderBottomColor: 'black',
         borderBottomWidth: 1,
         alignSelf: 'stretch',
+    },
+    roundContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        borderColor: 'black',
+        borderRadius: 5,
+        borderWidth: 1
     }
 });
