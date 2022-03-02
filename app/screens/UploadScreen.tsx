@@ -3,7 +3,9 @@ import { Button, Image, View, Platform, Alert, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { RootStackScreenProps } from '../types';
 import { getAccessToken } from 'react-native-axios-jwt';
-import { urls } from '../utils/auth';
+import { axiosInstance, urls } from '../utils/auth';
+import mime from "mime";
+
 
 export default function UploadScreen({ navigation }: RootStackScreenProps<'Upload'>) {
 
@@ -11,30 +13,43 @@ export default function UploadScreen({ navigation }: RootStackScreenProps<'Uploa
     const [imageType, setImageType] = useState(null);
 
     async function uploadImage() {
-        if (image != null) {
-            const data = new FormData();
-            // data.append('image', image);
-            data.append('image', {
-                uri: image.uri,
-                name: 'upload.jpg',
-                type: imageType
-            });
-            await fetch(
-                urls.baseApiURL + '/upload',
-                {
-                    method: 'post',
-                    body: data,
-                    headers: {
-                        'Content-Type': 'multipart/form-data; ',
-                        'Authorization': `Bearer ${await getAccessToken()}`
-                    },
-                }
-            );
+        try {
+            if (image != null) {
+                const newImageUri = "file:///" + image.uri.split("file:/").join("");
+
+                const data = new FormData();
+                data.append('image', {
+                    uri: newImageUri,
+                    name: 'uploadpic',
+                    type: mime.getType(newImageUri)
+                });
+
+                await fetch(
+                    urls.baseApiURL + '/upload',
+                    {
+                        method: 'post',
+                        body: data,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${await getAccessToken()}`
+                        },
+                    }
+                );
+            }
+        } catch (e) {
+            console.log(e);
+
         }
     }
 
 
     const pickImage = async () => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+        }
         // No permissions request is necessary for launching the image library
 
         let result = await ImagePicker.launchImageLibraryAsync({
