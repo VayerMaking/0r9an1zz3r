@@ -4,6 +4,7 @@ import { RootStackScreenProps } from '../types';
 import { useNavigation } from '@react-navigation/native';
 import { axiosInstance, ILoginRequest } from '../utils/auth';
 import { getAccessToken, getRefreshToken, setAuthTokens } from 'react-native-axios-jwt';
+import { FontAwesome, FontAwesome5, SimpleLineIcons } from '@expo/vector-icons';
 
 
 export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
@@ -44,14 +45,26 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
                 <Text style={styles.forgot}>Forgot Password?</Text>
             </TouchableOpacity> */}
             <TouchableOpacity style={styles.loginBtn} onPress={() => login({ email, password })}>
-                <Text style={styles.loginText}>LOGIN</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    {/* <SimpleLineIcons name="login" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}> */}
+                    <Text style={styles.loginText}>LOGIN</Text>
+
+                    {/* </SimpleLineIcons> */}
+                </View>
+
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.loginText}>Register</Text>
+            <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
+                {/* <FontAwesome5 name="file-signature" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}> */}
+                <Text style={styles.registerText}>REGISTER</Text>
+                {/* </FontAwesome5> */}
             </TouchableOpacity>
-            <TouchableOpacity >
-                <Text style={styles.loginText}>Login With Google</Text>
-            </TouchableOpacity>
+
+
+            <FontAwesome.Button name="google" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}>
+                Login with Google
+            </FontAwesome.Button>
+            {/* <Text style={styles.loginText}>Login With Google</Text> */}
+
 
 
         </View>
@@ -95,10 +108,27 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 40,
-        marginBottom: 10
+        margin: 10,
+        textAlignVertical: 'center'
+    },
+    registerBtn: {
+        width: "54%",
+        backgroundColor: "#3b5998",
+        borderRadius: 25,
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        margin: 10,
+        textAlignVertical: 'center'
     },
     loginText: {
-        color: "white"
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    registerText: {
+        color: "black",
+        fontSize: 16,
+        fontWeight: "bold"
     }
 });
