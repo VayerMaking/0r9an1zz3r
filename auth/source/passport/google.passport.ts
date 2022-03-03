@@ -4,7 +4,7 @@ import userController from "../controller";
 
 const googleStrategy: GoogleStrategy = new GoogleStrategy(
     {
-        callbackURL: 'http://localhost:5000/social/google/redirect',
+        callbackURL: 'https://bedf-77-76-8-119.ngrok.io/social/google/redirect',
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
@@ -12,7 +12,7 @@ const googleStrategy: GoogleStrategy = new GoogleStrategy(
         try {
             const email: string = profile.emails[0].value;
             let user = await userController.findByEmail(email);
-            if (user.provider === "local")
+            if (user && user.provider === "local")
                 return done(createHttpError(403, "Email used by local user"), null);
             if (!user) {
                 user = await userController.createNew({

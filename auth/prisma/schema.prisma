@@ -11,8 +11,8 @@ model user {
   id       Int @id @default(autoincrement())
   email    String @unique
   username String
-  salt     String
-  hash     String
+  salt     String?
+  hash     String?
   provider String
 }
 
