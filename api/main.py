@@ -131,11 +131,11 @@ def upload():
         file_path = sys.path[0] + '/uploads/' + new_filename
 
         # get color names
-        colors_rgb = cd.get_colors_rgb(cd.get_image(file_path), 3)
-        colors_rgb_array = []
-        for count, value in enumerate(colors_rgb):
+        color_names = cd.get_color_names(cd.get_image(file_path), 3)
+        color_names_array = []
+        for count, value in enumerate(color_names):
             print(color_name.convert_rgb_to_names(value), flush=True)
-            colors_rgb_array.append(
+            color_names_array.append(
                 color_name.convert_rgb_to_names(value).split(": ")[1])
             if count >= 3:
                 break
@@ -150,8 +150,8 @@ def upload():
         ocr_result = pytesseract.image_to_string(PIL.Image.open(file_path))
 
         image = Image(filename=new_filename,
-                      tag=predictions, user_id=id, is_classified=True,
-                      colors_rgb=colors_rgb_array, colors_hex=colors_hex_array,
+                      tags=predictions, user_id=id, is_classified=True,
+                      colors_rgb=color_names_array, colors_hex=colors_hex_array,
                       color_percentages=color_percentages, image_text=ocr_result)
 
         db.session.add(image)
@@ -303,7 +303,7 @@ def getByColorName():
 def getByTag():
     wanted_tag = request.args.get('tag')
     images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.tag.any(wanted_tag)).all()
+        request), Image.tags.any(wanted_tag)).all()
     return jsonify(images)
 
 
