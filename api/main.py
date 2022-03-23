@@ -307,6 +307,14 @@ def getByTag():
     return jsonify(images)
 
 
+@app.route('/getByImageText', methods=['GET'])
+def getByImageText():
+    wanted_text = request.args.get('text')
+    images = Image.query.filter(Image.user_id == get_user_id(
+        request), Image.image_text.like(wanted_text)).all()
+    return jsonify(images)
+
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
