@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, StyleSheet } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import CategoriesComponent from '../components/CategoriesComponent';
+import CategoriesComponent from '../components/SearchComponent';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 

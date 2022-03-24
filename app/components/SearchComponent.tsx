@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import SearchBar from "react-native-dynamic-search-bar";
 import { axiosInstance, urls } from "../utils/auth";
 import { Dropdown } from 'react-native-element-dropdown';
-import SearchImagesComponent from "./SearchImagesComponent";
+import SearchImagesComponent from "./ResultImagesComponent";
 // import { ColorPicker } from "react-native-btr";
 import { ColorPicker } from "./ColorPickerComponent";
 import { useNavigation } from "@react-navigation/native";
