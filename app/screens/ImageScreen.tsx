@@ -46,6 +46,7 @@ export default function ImageScreen({
         filename: string;
         id: number;
         tags: string[];
+        image_text: string;
     }
 
     let defaultImageDetails: IImageDetails = {
@@ -55,6 +56,7 @@ export default function ImageScreen({
         filename: "",
         id: 0,
         tags: [],
+        image_text: "",
     };
 
     const [imageDetails, setImageDetails] =
@@ -108,6 +110,7 @@ export default function ImageScreen({
                 id: json.id,
                 tags: json.tags,
                 color_percentages: json.color_percentages,
+                image_text: json.image_text,
             };
             setData(fetchedImageDetails);
 
@@ -192,6 +195,14 @@ export default function ImageScreen({
                     // absolute
                     />
                 )}
+
+                <View style={styles.imageTextContainer}>
+                    <ScrollView>
+                        <Text style={{ margin: 15 }}>
+                            {imageDetails.image_text}
+                        </Text>
+                    </ScrollView>
+                </View>
             </View>
         </ScrollView>
     );
@@ -223,15 +234,22 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     separatorLine: {
-        borderBottomColor: 'black',
+        borderBottomColor: 'grey',
         borderBottomWidth: 1,
         alignSelf: 'stretch',
     },
     roundContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        borderColor: 'black',
+        borderColor: 'grey',
         borderRadius: 5,
         borderWidth: 1
+    },
+    imageTextContainer: {
+        height: 100,
+        borderColor: "grey",
+        borderRadius: 5,
+        borderWidth: 1,
+        margin: 20
     }
 });
