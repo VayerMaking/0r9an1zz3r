@@ -12,7 +12,9 @@ const data = [
     { label: 'Tags', value: 'by_tag' },
     { label: 'Color Name', value: 'by_color_name' },
     { label: 'Color Hex', value: 'by_color_hex' },
-    { label: 'Color Picker', value: 'color_picker' }
+    { label: 'Color Picker', value: 'color_picker' },
+    { label: 'Text', value: 'by_text' }
+
 ];
 
 const wait = (timeout: number | undefined) => {
@@ -106,10 +108,7 @@ export default function ImageComponent() {
 
             return filteredData;
 
-        } else {
-            return "bla"
         }
-
     }
 
     async function searchDataOnPress(searchValue: any, searchType: string | null) {
@@ -125,6 +124,8 @@ export default function ImageComponent() {
         } else if (searchType == 'color_picker') {
             // setImagesVisability(true);
             return getByHex(searchValue);
+        } else if (searchType == 'by_text') {
+            return getByText(searchValue);
         }
 
     }
@@ -151,6 +152,14 @@ export default function ImageComponent() {
     async function getByTag(searchValue: string) {
         const url = urls.baseApiURL + '/getByTag';
         const response = await axiosInstance.get(url, { params: { tag: searchValue } });
+        const json = await response.data;
+        setColorPickerVisability(false)
+        setImages(json);
+    }
+
+    async function getByText(searchValue: string) {
+        const url = urls.baseApiURL + '/getByImageText';
+        const response = await axiosInstance.get(url, { params: { text: searchValue } });
         const json = await response.data;
         setColorPickerVisability(false)
         setImages(json);
@@ -254,7 +263,7 @@ export default function ImageComponent() {
                                     onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: urls.baseApiURL })}>
                                     <Image source={{ uri: URL }} style={styles.imageStyles} />
 
-                                    <Text>{i.tag}</Text>
+                                    {/* <Text>{i.tag}</Text> */}
                                 </TouchableOpacity>
                             );
                         })
