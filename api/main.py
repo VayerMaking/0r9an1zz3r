@@ -47,9 +47,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 
 # image classification config
-
 execution_path = os.getcwd()
-
 prediction = ImageClassification()
 prediction.setModelTypeAsMobileNetV2()
 prediction.setModelPath(os.path.join(
@@ -188,45 +186,6 @@ def send_app_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@app.route('/classify_color/<image_id>', methods=['GET'])
-def classify_color(image_id):
-    image = Image.query.filter_by(id=image_id).first()
-    print("image_if: ", image_id, flush=True)
-
-    # color recognition logic
-    file_path = sys.path[0] + '/uploads/' + image.filename
-    print("file_path: ", file_path, flush=True)
-
-    colors = cd.get_colors(cd.get_image(file_path), 3, True)
-    colors_array = []
-    for count, value in enumerate(colors):
-        print(color_name.convert_rgb_to_names(value), flush=True)
-        colors_array.append(
-            color_name.convert_rgb_to_names(value).split(": ")[1])
-        if count >= 3:
-            break
-
-    image.colors = colors_array
-    db.session.add(image)
-    db.session.commit()
-    # image = Image(filename=new_filename, colors=colors)
-
-    # db.session.add(image)
-    # db.session.commit()
-
-    return jsonify(image)
-
-
-@app.route('/ocr/<image_id>', methods=['GET'])
-def ocr(image_id):
-    image = Image.query.filter_by(id=image_id).first()
-    # color recognition logic
-    file_path = sys.path[0] + '/uploads/' + image.filename
-    ocr_result = pytesseract.image_to_string(PIL.Image.open(file_path))
-
-    return jsonify(ocr_result)
-
-
 @app.route('/getUser', methods=['GET'])
 def getUser():
     user = User.query.filter_by(id=get_user_id(request)).first()
@@ -256,7 +215,6 @@ def editTag():
     image.tags = request.json['new_tags']
     db.session.commit()
     return jsonify(image)
-# ["#4b4723","#e1e7f3","#857e6a"]
 
 
 @app.route('/getByHex', methods=['GET'])
@@ -328,8 +286,5 @@ def get_user_id(req):
 
 
 if __name__ == "__main__":
-    """
-    This is the main entry point for the program
-    """
     db.create_all()
-    app.run(host="0.0.0.0", port=80)  # , ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=80)
