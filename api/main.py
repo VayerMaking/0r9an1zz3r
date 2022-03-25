@@ -164,21 +164,31 @@ def upload():
 
 @app.route('/getImages', methods=['GET'])
 def getImages():
-    images = Image.query.filter_by(user_id=get_user_id(
-        request)).order_by(desc(Image.id)).limit(15).all()
-    return jsonify(images)
+    try:
+        images = Image.query.filter_by(user_id=get_user_id(
+            request)).order_by(desc(Image.id)).limit(15).all()
+        return jsonify(images)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getTags', methods=['GET'])
 def getTags():
-    images = Image.query.filter_by(user_id=get_user_id(
-        request)).order_by(desc(Image.id)).with_entities(Image.tags).all()
-    tags = []
-    for image in images:
-        for tag in image.tags:
-            if tag not in tags:
-                tags.append(tag)
-    return jsonify(tags)
+    try:
+        images = Image.query.filter_by(user_id=get_user_id(
+            request)).order_by(desc(Image.id)).with_entities(Image.tags).all()
+        tags = []
+        for image in images:
+            for tag in image.tags:
+                if tag not in tags:
+                    tags.append(tag)
+        return jsonify(tags)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/image/<path:filename>')
@@ -188,89 +198,140 @@ def send_app_image(filename):
 
 @app.route('/getUser', methods=['GET'])
 def getUser():
-    user = User.query.filter_by(id=get_user_id(request)).first()
-    return jsonify(user)
+    try:
+        user = User.query.filter_by(id=get_user_id(request)).first()
+        return jsonify(user)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getImageDetails/<image_id>', methods=['GET'])
 def getImageDetails(image_id):
-    image = Image.query.filter_by(
-        user_id=get_user_id(request), id=image_id).first()
-    return jsonify(image)
+    try:
+        image = Image.query.filter_by(
+            user_id=get_user_id(request), id=image_id).first()
+        return jsonify(image)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/deleteImage', methods=['POST'])
 def deleteImage():
-    image_id = request.json['image_id']
-    Image.query.filter_by(user_id=get_user_id(request), id=image_id).delete()
-    db.session.commit()
-    return jsonify("ok")
+    try:
+        image_id = request.json['image_id']
+        Image.query.filter_by(user_id=get_user_id(
+            request), id=image_id).delete()
+        db.session.commit()
+        return jsonify("ok")
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/editTags', methods=['PUT'])
 def editTag():
-    image_id = request.json['image_id']
-    image = Image.query.filter_by(
-        user_id=get_user_id(request), id=image_id).first()
-    image.tags = request.json['new_tags']
-    db.session.commit()
-    return jsonify(image)
+    try:
+        image_id = request.json['image_id']
+        image = Image.query.filter_by(
+            user_id=get_user_id(request), id=image_id).first()
+        image.tags = request.json['new_tags']
+        db.session.commit()
+        return jsonify(image)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getByHex', methods=['GET'])
 def getByHex():
-    wanted_hex = request.args.get('hex_val')
-    images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.colors_hex.any(wanted_hex)).all()
-    return jsonify(images)
+    try:
+        wanted_hex = request.args.get('hex_val')
+        images = Image.query.filter(Image.user_id == get_user_id(
+            request), Image.colors_hex.any(wanted_hex)).all()
+        return jsonify(images)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getHexValues', methods=['GET'])
 def getHexValues():
-    images = Image.query.filter_by(user_id=get_user_id(
-        request)).order_by(desc(Image.id)).with_entities(Image.colors_hex).all()
-    colors = []
-    for image in images:
-        for color in image.colors_hex:
-            if color not in colors:
-                colors.append(color)
-    return jsonify(colors)
+    try:
+        images = Image.query.filter_by(user_id=get_user_id(
+            request)).order_by(desc(Image.id)).with_entities(Image.colors_hex).all()
+        colors = []
+        for image in images:
+            for color in image.colors_hex:
+                if color not in colors:
+                    colors.append(color)
+        return jsonify(colors)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getColorNames', methods=['GET'])
 def getColorNames():
-    images = Image.query.filter_by(user_id=get_user_id(
-        request)).order_by(desc(Image.id)).with_entities(Image.colors_rgb).all()
-    color_names = []
-    for image in images:
-        for color_name in image.colors_rgb:
-            if color_name not in color_names:
-                color_names.append(color_name)
-    return jsonify(color_names)
+    try:
+        images = Image.query.filter_by(user_id=get_user_id(
+            request)).order_by(desc(Image.id)).with_entities(Image.colors_rgb).all()
+        color_names = []
+        for image in images:
+            for color_name in image.colors_rgb:
+                if color_name not in color_names:
+                    color_names.append(color_name)
+        return jsonify(color_names)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getByColorName', methods=['GET'])
 def getByColorName():
-    wanted_color_name = request.args.get('color_name')
-    images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.colors_rgb.any(wanted_color_name)).all()
-    return jsonify(images)
+    try:
+        wanted_color_name = request.args.get('color_name')
+        images = Image.query.filter(Image.user_id == get_user_id(
+            request), Image.colors_rgb.any(wanted_color_name)).all()
+        return jsonify(images)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getByTag', methods=['GET'])
 def getByTag():
-    wanted_tag = request.args.get('tag')
-    images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.tags.any(wanted_tag)).all()
-    return jsonify(images)
+    try:
+        wanted_tag = request.args.get('tag')
+        images = Image.query.filter(Image.user_id == get_user_id(
+            request), Image.tags.any(wanted_tag)).all()
+        return jsonify(images)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 @app.route('/getByImageText', methods=['GET'])
 def getByImageText():
-    wanted_text = request.args.get('text')
-    images = Image.query.filter(Image.user_id == get_user_id(
-        request), Image.image_text.like(wanted_text)).all()
-    return jsonify(images)
+    try:
+        wanted_text = request.args.get('text')
+        images = Image.query.filter(Image.user_id == get_user_id(
+            request), Image.image_text.like(wanted_text)).all()
+        return jsonify(images)
+    except jwt.exceptions.DecodeError:
+        abort(Response('Invalid Access Token Format', 400))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(Response('Signature Has Expired', 400))
 
 
 def random_string(length):
