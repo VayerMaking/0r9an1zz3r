@@ -51,8 +51,6 @@ export default function RegisterScreen({ navigation }: RootStackScreenProps<'Reg
             <TouchableOpacity style={styles.loginBtn} onPress={() => { register({ username, email, password }); navigation.navigate('Login') }}>
                 <Text style={styles.loginText}>Register</Text>
             </TouchableOpacity>
-
-
         </View>
     );
 }

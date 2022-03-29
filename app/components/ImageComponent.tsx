@@ -10,11 +10,8 @@ const wait = (timeout: number | undefined) => {
 
 export default function ImageComponent() {
     let [images, setImages] = useState([]);
-    // const baseURL = 'http://192.168.88.244:80';
-    // const baseURL = 'http://18.191.82.215:80';
     const [refreshing, setRefreshing] = React.useState(false);
     const navigation = useNavigation();
-    // let isInitialFetch: boolean = true;
 
     interface IImage {
         id: string,
@@ -76,8 +73,6 @@ export default function ImageComponent() {
                                 key={keyId}
                                 onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: urls.baseApiURL })}>
                                 <Image source={{ uri: URL }} style={styles.imageStyles} />
-
-                                <Text>{i.tag}</Text>
                             </TouchableOpacity>
                         );
                     })

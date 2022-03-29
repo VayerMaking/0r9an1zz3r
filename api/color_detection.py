@@ -17,7 +17,7 @@ def get_image(image_path):
     return image
 
 
-def get_colors_rgb(image, number_of_colors):
+def get_color_names(image, number_of_colors):
 
     modified_image = cv2.resize(
         image, (600, 400), interpolation=cv2.INTER_AREA)
@@ -28,13 +28,10 @@ def get_colors_rgb(image, number_of_colors):
     labels = clf.fit_predict(modified_image)
 
     counts = Counter(labels)
-    # sort to ensure correct color percentage
     counts = dict(sorted(counts.items()))
 
     center_colors = clf.cluster_centers_
-    # We get ordered colors by iterating through the keys
     ordered_colors = [center_colors[i] for i in counts.keys()]
-    hex_colors = [RGB2HEX(ordered_colors[i]) for i in counts.keys()]
     rgb_colors = [ordered_colors[i] for i in counts.keys()]
 
     return rgb_colors
@@ -51,11 +48,9 @@ def get_colors_hex(image, number_of_colors):
     labels = clf.fit_predict(modified_image)
 
     counts = Counter(labels)
-    # sort to ensure correct color percentage
     counts = dict(sorted(counts.items()))
 
     center_colors = clf.cluster_centers_
-    # We get ordered colors by iterating through the keys
     ordered_colors = [center_colors[i] for i in counts.keys()]
     hex_colors = [RGB2HEX(ordered_colors[i]) for i in counts.keys()]
 
@@ -72,7 +67,6 @@ def get_colors_percentages(image, number_of_colors):
     labels = clf.fit_predict(modified_image)
 
     counts = Counter(labels)
-    # sort to ensure correct color percentage
     counts = dict(sorted(counts.items()))
 
     return counts.values()

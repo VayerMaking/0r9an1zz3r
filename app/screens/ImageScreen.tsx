@@ -65,7 +65,6 @@ export default function ImageScreen({
     navigation.setOptions({
         headerRight: () =>
             <Pressable
-                // onPress={() => navigation.navigate('EditImage')}
                 onPress={() => navigation.navigate('EditImage', { imageId: imageId, tags: imageDetails.tags })}
 
                 style={({ pressed }) => ({
@@ -191,8 +190,6 @@ export default function ImageScreen({
                         accessor={"population"}
                         backgroundColor={"transparent"}
                         paddingLeft={"15"}
-                    //center={[10, 50]}
-                    // absolute
                     />
                 )}
 

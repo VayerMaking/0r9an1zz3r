@@ -4,9 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { axiosInstance } from "../utils/auth";
 import { urls } from "../utils/auth";
 
-export default function ImageComponent(props) {
+export default function ResultImagesComponent(props) {
     let [image, setImage] = useState<IImage>();
-
     const navigation = useNavigation();
 
     interface IImage {
@@ -17,17 +16,11 @@ export default function ImageComponent(props) {
         colors: Array<string>
     }
 
-
     useEffect(() => {
         setImage(props.image);
-        console.log("kwyid: ", props.keyId);
-
     }, []);
-    console.log("kwyid: ", props.keyId);
-    console.log("image from component: ", image);
 
     const URL = urls.baseApiURL + '/image/' + image.filename;
-
 
     return <>
         <TouchableOpacity

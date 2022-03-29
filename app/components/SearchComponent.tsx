@@ -4,7 +4,6 @@ import SearchBar from "react-native-dynamic-search-bar";
 import { axiosInstance, urls } from "../utils/auth";
 import { Dropdown } from 'react-native-element-dropdown';
 import SearchImagesComponent from "./ResultImagesComponent";
-// import { ColorPicker } from "react-native-btr";
 import { ColorPicker } from "./ColorPickerComponent";
 import { useNavigation } from "@react-navigation/native";
 
@@ -28,26 +27,17 @@ export default function ImageComponent() {
     const [imagesVisability, setImagesVisability] = useState<boolean>(false);
     const [colorNames, setColorNames] = useState([]);
     const [colors, setColors] = useState([]);
-
-    // const [filteredTags, setFilteredTags] = useState([...tags]);
     const [filteredData, setFilteredData] = useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
     const [dropdownValue, setDropdownValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
-
     const [colorPickerVisability, setColorPickerVisability] = useState<boolean>(false);
     const [text, setText] = useState('');
-
-    // const onChangeText = useCallback((value) => {
-    //     setText(value);
-    //     searchDataOnChange(text, dropdownValue);  
-    // }, []);
 
     function onChangeText(text: React.SetStateAction<string>, dropdownValue: string | null) {
         setTagsVisability(true);
         setText(text);
         searchDataOnChange(text, dropdownValue);
-
     }
 
     const [selectedColor, setSelectedColor] = useState("");
@@ -61,10 +51,6 @@ export default function ImageComponent() {
 
     async function searchDataOnChange(searchValue: any, searchType: string | null) {
         if (searchType == 'by_tag') {
-            console.log("by tag");
-            console.log(searchValue);
-            //console.log("tags: ", await fetchTags())
-
             if (searchValue == undefined) {
                 return setFilteredData(tags);
             }
@@ -76,8 +62,6 @@ export default function ImageComponent() {
             return filteredData;
 
         } else if (searchType == 'by_color_name') {
-            console.log("by clor name");
-            console.log(searchValue);
             if (searchValue == undefined) {
                 return setFilteredData(colorNames);
             }
@@ -90,11 +74,6 @@ export default function ImageComponent() {
             return filteredData;
 
         } else if (searchType == 'by_color_hex') {
-            console.log("by hex");
-            console.log(searchValue);
-            console.log("colors: ", colors);
-
-
             if (searchValue == undefined) {
                 return setFilteredData(colors);
             }
@@ -102,8 +81,6 @@ export default function ImageComponent() {
 
                 return item.toLowerCase().includes(searchValue.toLowerCase());
             });
-            console.log("colors filtered: ", filteredData);
-
             setFilteredData(filteredData);
 
             return filteredData;
@@ -119,10 +96,8 @@ export default function ImageComponent() {
         } else if (searchType == 'by_color_name') {
             return getByColorName(searchValue);
         } else if (searchType == 'by_color_hex') {
-            // setImagesVisability(true);
             return getByHex(searchValue);
         } else if (searchType == 'color_picker') {
-            // setImagesVisability(true);
             return getByHex(searchValue);
         } else if (searchType == 'by_text') {
             return getByText(searchValue);
@@ -204,7 +179,6 @@ export default function ImageComponent() {
             <View>
                 <SearchBar
                     placeholder="Search"
-                    //onPress={() => alert("onPress")}
                     onChangeText={(text) => onChangeText(text, dropdownValue)}
                     onClearPress={() => { setText(''); setImagesVisability(false) }}
                     onSearchPress={() => searchDataOnPress(text, dropdownValue)}
@@ -244,9 +218,6 @@ export default function ImageComponent() {
             </View>
 
         </View>
-        {/* // <View>
-            //     <SearchImagesComponent images={images}></SearchImagesComponent>
-            // </View> */}
         {imagesVisability &&
             <ScrollView>
                 <View style={styles.imagesContainer}>
@@ -256,14 +227,11 @@ export default function ImageComponent() {
                             const URL = urls.baseApiURL + '/image/' + i.filename;
                             const keyId = images.indexOf(i);
                             return (
-                                // <SearchImagesComponent keyId={images.indexOf(i)} image={i}></SearchImagesComponent>
                                 <TouchableOpacity
                                     style={styles.item}
                                     key={keyId}
                                     onPress={() => navigation.navigate('Image', { imageId: i.id, filename: i.filename, baseApiURL: urls.baseApiURL })}>
                                     <Image source={{ uri: URL }} style={styles.imageStyles} />
-
-                                    {/* <Text>{i.tag}</Text> */}
                                 </TouchableOpacity>
                             );
                         })
@@ -277,11 +245,9 @@ export default function ImageComponent() {
 
         {colorPickerVisability &&
             <View style={styles.colorPickerContainer}>
-                {/* <Text>Selected Color = {selectedColor}</Text> */}
                 <View style={styles.wrapper}>
                     <ColorPicker selectedColor={selectedColor} onSelect={setColor} colors={colors} />
                 </View>
-                {/* <Text> Scroll Horizontally for more colors </Text> */}
             </View>
         }
 
