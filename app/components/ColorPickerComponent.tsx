@@ -9,27 +9,9 @@ export type ColorPickerProps = {
 };
 
 export function ColorPicker({
-    colors = [
-        "#F44336",
-        "#E91E63",
-        "#9C27B0",
-        "#673AB7",
-        "#3F51B5",
-        "#2196F3",
-        "#03A9F4",
-        "#00BCD4",
-        "#009688",
-        "#4CAF50",
-        "#8BC34A",
-        "#CDDC39",
-        "#FFEB3B",
-        "#FFC107",
-        "#FF9800",
-        "#FF5722",
-        "#795548",
-        "#9E9E9E",
-        "#607D8B",
-    ],
+    colors = ["#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+        "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548",
+        "#9E9E9E", "#607D8B",],
     onSelect = (item: string) => { },
     selectedColor = "#F44336",
 }: ColorPickerProps) {
@@ -50,7 +32,6 @@ export function ColorPicker({
                 </TouchableOpacity>
             )}
             keyExtractor={(item, index) => "key" + index}
-            // horizontal={true}
             keyboardShouldPersistTaps="always"
             contentContainerStyle={styles.colorlist}
         />
@@ -69,9 +50,5 @@ const styles = StyleSheet.create({
     colorlist: {
         maxHeight: Dimensions.get("screen").height,
         maxWidth: Dimensions.get("screen").width,
-        // flex: 1,
-        // flexDirection: 'row',
-        // flexWrap: 'wrap',
-        // alignItems: 'flex-start' // if you want to fill rows left to right
     }
 });

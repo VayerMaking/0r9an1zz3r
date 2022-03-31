@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Linking } from 'react-native';
 import { RootStackScreenProps } from '../types';
 import { useNavigation } from '@react-navigation/native';
-import { axiosInstance, ILoginRequest } from '../utils/auth';
+import { axiosInstance, ILoginRequest, urls } from '../utils/auth';
 import { getAccessToken, getRefreshToken, setAuthTokens } from 'react-native-axios-jwt';
 import { FontAwesome, FontAwesome5, SimpleLineIcons } from '@expo/vector-icons';
-
+import * as WebBrowser from 'expo-web-browser';
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
     let [email, setEmail] = useState<string>('');
@@ -14,7 +15,6 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     const login = async (params: ILoginRequest) => {
         const response = await axiosInstance.post('/login', params)
 
-        // save tokens to storage
         await setAuthTokens({
             accessToken: response.data.data.access,
             refreshToken: response.data.data.refresh
@@ -22,6 +22,15 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
 
         navigation.push('Root', { screen: 'TabThree' });
     }
+
+    const _handlePressButtonAsync = async () => {
+        const redirect = await Linking.getInitialURL('/')
+        console.log("redirect", redirect);
+        let result = await WebBrowser.openBrowserAsync(urls.baseAuthURL + '/social/google');
+        // const result = await InAppBrowser.open(urls.baseAuthURL + '/social/google');
+        console.log("result", result);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>0r9an1zz3r</Text>
@@ -41,31 +50,25 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
                     placeholderTextColor="#003f5c"
                     onChangeText={text => setPassword(text)} />
             </View>
-            {/* <TouchableOpacity>
-                <Text style={styles.forgot}>Forgot Password?</Text>
-            </TouchableOpacity> */}
+
             <TouchableOpacity style={styles.loginBtn} onPress={() => login({ email, password })}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    {/* <SimpleLineIcons name="login" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}> */}
                     <Text style={styles.loginText}>LOGIN</Text>
-
-                    {/* </SimpleLineIcons> */}
                 </View>
 
             </TouchableOpacity>
             <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
-                {/* <FontAwesome5 name="file-signature" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}> */}
                 <Text style={styles.registerText}>REGISTER</Text>
-                {/* </FontAwesome5> */}
             </TouchableOpacity>
 
-
-            <FontAwesome.Button name="google" size={24} width={200} color="black" backgroundColor="#3b5998" borderRadius={25} onPress={console.log("asdf")}>
+            <FontAwesome.Button
+                name="google" size={24}
+                width={200} color="black"
+                backgroundColor="#3b5998"
+                borderRadius={25}
+                onPress={_handlePressButtonAsync}>
                 Login with Google
             </FontAwesome.Button>
-            {/* <Text style={styles.loginText}>Login With Google</Text> */}
-
-
 
         </View>
     );

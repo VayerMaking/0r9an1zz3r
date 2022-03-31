@@ -166,7 +166,7 @@ def upload():
 def getImages():
     try:
         images = Image.query.filter_by(user_id=get_user_id(
-            request)).order_by(desc(Image.id)).limit(15).all()
+            request)).order_by(desc(Image.id)).limit(50).all()
         return jsonify(images)
     except jwt.exceptions.DecodeError:
         abort(Response('Invalid Access Token Format', 400))

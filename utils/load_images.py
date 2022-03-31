@@ -9,8 +9,8 @@ auth_url = 'http://192.168.88.244:5000/login'
 login_headers = {"Content-Type": "application/json; charset=utf-8"}
 
 login_data = {
-    "email": "vayer2@gmail.com",
-    "password": "qwerty2",
+    "email": "vayer@gmail.com",
+    "password": "qwerty",
 }
 
 response = requests.post(auth_url, headers=login_headers, json=login_data)

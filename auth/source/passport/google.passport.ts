@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import userController from "../controller";
 
+let qwerty = "qwerty123"
 const googleStrategy: GoogleStrategy = new GoogleStrategy(
     {
         callbackURL: 'https://bedf-77-76-8-119.ngrok.io/social/google/redirect',
@@ -20,7 +21,7 @@ const googleStrategy: GoogleStrategy = new GoogleStrategy(
                     username: profile.displayName,
                     provider: profile.provider,
                 });
-            }
+            }            
             return done(null, user);
         } catch (err) {
             return done(err, null);
